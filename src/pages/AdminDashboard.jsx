@@ -1,0 +1,359 @@
+import React, { useState, useEffect, useRef } from 'react';
+
+import { useAppState } from '../context/AppStateContext';
+import { ShieldCheck, AlertTriangle, Send, Check, FileText, BarChart3, Bike, Bot, CheckCircle2 } from 'lucide-react';
+import { AdminHeroVisual } from '../components/AdminHeroVisual';
+
+const useScrollReveal = (dependency) => {
+  useEffect(() => {
+    const selectors = '.reveal, .reveal-left, .reveal-right, .reveal-scale, .reveal-up';
+    const els = document.querySelectorAll(selectors);
+    els.forEach(el => el.classList.remove('is-visible'));
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+
+    setTimeout(() => { els.forEach(el => observer.observe(el)); }, 50);
+    return () => observer.disconnect();
+  }, [dependency]);
+};
+
+export const AdminDashboard = () => {
+  
+  const { darkMode, drivers, verifyDriverStatus, orders, escalatedChats, resolveEscalatedChat, showToast } = useAppState();
+
+  const [activeTab, setActiveTab] = useState('verification');
+  const [selectedChat, setSelectedChat] = useState(escalatedChats[0] || null);
+  const [adminReplyText, setAdminReplyText] = useState('');
+
+  useEffect(() => {
+    const handleHash = () => {
+      const hash = window.location.hash.replace('#', '');
+      if (['verification', 'orders', 'support', 'finances'].includes(hash)) {
+        setActiveTab(hash);
+      }
+    };
+    window.addEventListener('hashchange', handleHash);
+    handleHash();
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
+  useScrollReveal(activeTab);
+
+  const pendingDrivers = drivers.filter(d => d.status === 'Pending Verification');
+  const verifiedDrivers = drivers.filter(d => d.status === 'Verified');
+
+  const handleResolveChat = (e) => {
+    e.preventDefault();
+    if (!selectedChat || !adminReplyText.trim()) return;
+    resolveEscalatedChat(selectedChat.id, adminReplyText.trim());
+    setAdminReplyText('');
+  };
+
+  const headerRef = useRef(null);
+  const handleHeaderMouse = (e) => {
+    if (!headerRef.current) return;
+    const { clientX, clientY, currentTarget } = e;
+    const { left, top, width, height } = currentTarget.getBoundingClientRect();
+    const x = ((clientX - left) / width  - 0.5) * 12;
+    const y = ((clientY - top)  / height - 0.5) * 12;
+    headerRef.current.style.transform = `perspective(1000px) rotateX(${-y}deg) rotateY(${x}deg) scale(1.01)`;
+  };
+  const handleHeaderLeave = () => {
+    if (headerRef.current)
+      headerRef.current.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1)';
+  };
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'var(--bg-base)', padding: '40px 0 80px' }}>
+      <div className="noise-overlay" />
+      <div className="container" style={{ position: 'relative', zIndex: 1 }}>
+        
+        {/* Hero Section */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 64, alignItems: 'center', marginBottom: 60, marginTop: 20 }}>
+          {/* Left Text */}
+          <div>
+            <div className="section-badge reveal" style={{ marginBottom: 20, background: 'rgba(217,119,6,0.1)', color: '#D97706', borderColor: 'rgba(217,119,6,0.2)' }}>
+              Master Control Panel
+            </div>
+            
+            <h1 className="reveal reveal-delay-1" style={{ fontSize: '3.6rem', marginBottom: 16, lineHeight: 1.05 }}>
+              Platform Operations <br />
+              <span className="grad-saffron italic-serif">At a Glance.</span>
+            </h1>
+
+            <p className="reveal reveal-delay-2" style={{ color: 'var(--text-muted)', fontSize: '1.05rem', maxWidth: 440, marginBottom: 28, lineHeight: 1.6 }}>
+              Oversee the entire LunchMate network. From driver approvals to live AI support escalations.
+            </p>
+
+            <div className="reveal reveal-delay-3" style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
+              <div style={{ 
+                background: 'var(--bg-card-warm)', border: '1px solid var(--border-light)', 
+                padding: '12px 24px', borderRadius: 99, fontSize: '0.9rem',
+                display: 'flex', alignItems: 'center', gap: 10,
+                boxShadow: '0 8px 24px rgba(26,18,11,0.06)'
+              }}>
+                <span className="animate-pulse-dot" style={{ width: 8, height: 8, borderRadius: '50%', background: '#15803D', display: 'inline-block' }} />
+                <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>System Health:</span> <strong style={{ color: '#15803D' }}>100% Operational</strong>
+              </div>
+            </div>
+            
+            <div className="reveal reveal-delay-4" style={{ marginTop: 24, display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ 
+                background: 'rgba(217,119,6,0.1)', color: '#D97706', 
+                border: '1px solid rgba(217,119,6,0.2)', fontSize: '0.72rem', 
+                padding: '4px 12px', borderRadius: 99, fontWeight: 700,
+                letterSpacing: '0.06em'
+              }}>🔒 ENCRYPTED SESSION</span>
+            </div>
+          </div>
+
+          {/* Right Visual */}
+          <div className="reveal-scale">
+            <AdminHeroVisual />
+          </div>
+        </div>
+
+        {/* Tab Navigation */}
+        <div className="reveal reveal-delay-1" style={{ display: 'flex', gap: 12, marginBottom: 30, borderBottom: '1px solid var(--border-light)', paddingBottom: 14 }}>
+          {[
+            { id: 'verification', label: <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><FileText size={16} /> Driver Approvals ({pendingDrivers.length})</span> },
+            { id: 'analytics', label: <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><BarChart3 size={16} /> Analytics & Revenue Split</span> },
+            { id: 'activeOrders', label: <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Bike size={16} /> Live Fleet Monitor ({orders.length})</span> },
+            { id: 'supportEscalation', label: <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Bot size={16} /> AI Inbox ({escalatedChats.filter(c => c.status === 'Open').length})</span> }
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              style={{
+                background: activeTab === tab.id
+                  ? (darkMode ? 'linear-gradient(135deg, #D97706 0%, #B45309 100%)' : '#1A120B')
+                  : 'transparent',
+                border: activeTab === tab.id && darkMode ? '1px solid rgba(251, 191, 36, 0.4)' : 'none',
+                color: activeTab === tab.id ? '#FFFFFF' : 'var(--text-muted)',
+                padding: '10px 20px', borderRadius: 99,
+                fontSize: '0.9rem', fontFamily: 'var(--font-ui)',
+                fontWeight: activeTab === tab.id ? 700 : 600,
+                cursor: 'pointer', transition: 'all 0.3s var(--ease-spring)',
+                boxShadow: activeTab === tab.id
+                  ? (darkMode ? '0 6px 20px rgba(217, 119, 6, 0.35)' : '0 8px 24px rgba(26,18,11,0.2)')
+                  : 'none'
+              }}
+              onMouseOver={e => { if(activeTab !== tab.id) e.currentTarget.style.color = 'var(--text-heading)' }}
+              onMouseOut={e => { if(activeTab !== tab.id) e.currentTarget.style.color = 'var(--text-muted)' }}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* TAB 1: KYC */}
+        {activeTab === 'verification' && (
+          <div>
+            <h3 className="reveal-left" style={{ fontSize: '1.4rem', fontFamily: 'var(--font-display)', marginBottom: 20, color: 'var(--text-heading)' }}>Pending Driver Approvals</h3>
+            
+            {pendingDrivers.length === 0 ? (
+              <div className="card reveal-scale" style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>
+                <CheckCircle2 size={20} style={{ verticalAlign: 'middle', marginRight: 8 }} color="#15803D" /> All submitted driver KYC applications have been reviewed!
+              </div>
+            ) : (
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 24 }}>
+                {pendingDrivers.map((drv, i) => (
+                  <div key={drv.id} className={`card reveal-scale reveal-delay-${(i%3)+1} card-lift`} style={{ padding: 26, border: '1px solid rgba(249,115,22,0.3)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+                      <div>
+                        <h4 style={{ color: 'var(--text-heading)', fontSize: '1.15rem', fontFamily: 'var(--font-display)' }}>{drv.name}</h4>
+                        <span style={{ color: '#F97316', fontSize: '0.8rem' }}>{drv.area} • {drv.phone}</span>
+                      </div>
+                      <span style={{ background: 'rgba(249,115,22,0.1)', color: '#F97316', padding: '4px 12px', borderRadius: 12, fontSize: '0.75rem', fontWeight: 600, height: 'fit-content' }}>
+                        Pending Review
+                      </span>
+                    </div>
+
+                    <div style={{ background: 'var(--bg-card-warm)', padding: 18, borderRadius: 16, fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 8, border: '1px solid var(--border-light)' }}>
+                      <div> Vehicle: <strong style={{ color: 'var(--text-heading)' }}>{drv.vehicle}</strong></div>
+                      <div> Aadhaar: <strong style={{ color: '#F97316' }}>{drv.documents.aadhaar}</strong></div>
+                      <div> Driving License: <strong style={{ color: 'var(--text-heading)' }}>{drv.documents.license}</strong></div>
+                      <div> PAN: <strong style={{ color: 'var(--text-heading)' }}>{drv.documents.pan}</strong></div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      <button onClick={() => verifyDriverStatus(drv.id, 'Verified')} className="btn-primary" style={{ flex: 1, justifyContent: 'center', background: '#15803D' }}>
+                        <Check size={16} /> Approve & Activate
+                      </button>
+                      <button onClick={() => verifyDriverStatus(drv.id, 'Rejected')} className="btn-outline" style={{ borderColor: 'rgba(239,68,68,0.4)', color: '#EF4444' }}>
+                        Reject
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <h3 className="reveal-left" style={{ fontSize: '1.4rem', fontFamily: 'var(--font-display)', margin: '48px 0 20px', color: 'var(--text-heading)' }}>Active Verified Drivers ({verifiedDrivers.length})</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 16 }}>
+              {verifiedDrivers.map((drv, i) => (
+                <div key={drv.id} className={`card reveal-up reveal-delay-${(i%5)+1} card-lift`} style={{ padding: 20 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
+                    <span style={{ color: 'var(--text-heading)', fontWeight: 700, fontFamily: 'var(--font-display)', fontSize: '1.1rem' }}>{drv.name}</span>
+                    <span style={{ color: '#15803D', fontSize: '0.8rem', fontWeight: 600 }}>⭐ {drv.rating}</span>
+                  </div>
+                  <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{drv.area} • Trips Today: {drv.tripsToday}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: ANALYTICS */}
+        {activeTab === 'analytics' && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 24, marginBottom: 36 }}>
+            <div className="card reveal-scale reveal-delay-1 card-lift" style={{ padding: 26, background: 'rgba(249,115,22,0.03)' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Total Daily Orders</span>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '2.4rem', fontWeight: 700, color: '#F97316', margin: '8px 0 4px' }}>248</div>
+              <span style={{ fontSize: '0.75rem', color: '#15803D' }}>+18% from last week</span>
+            </div>
+            <div className="card reveal-scale reveal-delay-2 card-lift" style={{ padding: 26, background: 'rgba(217,119,6,0.03)' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Platform Gross Revenue</span>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '2.4rem', fontWeight: 700, color: '#D97706', margin: '8px 0 4px' }}>₹14,880</div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>Average ₹60 / order</span>
+            </div>
+            <div className="card reveal-scale reveal-delay-3 card-lift" style={{ padding: 26, background: 'rgba(21,128,61,0.03)' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Driver Payouts (85%)</span>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '2.4rem', fontWeight: 700, color: '#15803D', margin: '8px 0 4px' }}>₹12,648</div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>Directly distributed</span>
+            </div>
+            <div className="card reveal-scale reveal-delay-4 card-lift" style={{ padding: 26, background: 'rgba(13,148,136,0.03)' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Net Commission (15%)</span>
+              <div style={{ fontFamily: 'var(--font-display)', fontSize: '2.4rem', fontWeight: 700, color: '#0D9488', margin: '8px 0 4px' }}>₹2,232</div>
+              <span style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>Operation margin</span>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: LIVE FLEET */}
+        {activeTab === 'activeOrders' && (
+          <div className="card reveal" style={{ padding: 36 }}>
+            <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-display)', marginBottom: 24, color: 'var(--text-heading)' }}>Live Deliveries Fleet Overview</h3>
+            <table className="premium-table reveal-up reveal-delay-1">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Parent</th>
+                  <th>Student & Destination</th>
+                  <th>Driver</th>
+                  <th>Pickup OTP</th>
+                  <th>Delivery OTP</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.map((ord) => (
+                  <tr key={ord.id}>
+                    <td style={{ color: '#F97316', fontWeight: 700 }}>{ord.id}</td>
+                    <td>{ord.parentName}</td>
+                    <td>{ord.studentName} ({ord.schoolName})</td>
+                    <td style={{ color: '#0D9488', fontWeight: 600 }}>{ord.driverName}</td>
+                    <td style={{ letterSpacing: '2px', color: '#D97706', fontWeight: 700 }}>{ord.pickupOtp}</td>
+                    <td style={{ letterSpacing: '2px', color: '#0D9488', fontWeight: 700 }}>{ord.deliveryOtp}</td>
+                    <td>
+                      <span style={{ 
+                        background: ord.status === 'Delivered' ? 'rgba(21,128,61,0.1)' : 'rgba(249,115,22,0.1)', 
+                        color: ord.status === 'Delivered' ? '#15803D' : '#F97316', 
+                        padding: '4px 10px', borderRadius: 12, fontSize: '0.78rem', fontWeight: 700 
+                      }}>
+                        {ord.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* TAB 4: AI SUPPORT */}
+        {activeTab === 'supportEscalation' && (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: 28 }}>
+            
+            {/* Left Queue */}
+            <div className="card reveal-left" style={{ padding: 26, background: 'var(--bg-card-warm)' }}>
+              <h4 style={{ color: '#D97706', fontSize: '1.1rem', fontFamily: 'var(--font-display)', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <AlertTriangle size={18} /> Escalated Chats ({escalatedChats.length})
+              </h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {escalatedChats.map((chat) => (
+                  <div
+                    key={chat.id}
+                    onClick={() => setSelectedChat(chat)}
+                    className="card-lift"
+                    style={{
+                      background: selectedChat?.id === chat.id ? 'rgba(217,119,6,0.1)' : 'var(--bg-card)',
+                      border: selectedChat?.id === chat.id ? '1px solid rgba(217,119,6,0.4)' : '1px solid var(--border-light)',
+                      borderRadius: 18, padding: 18, cursor: 'pointer', transition: 'all 0.2s ease',
+                      boxShadow: selectedChat?.id === chat.id ? '0 8px 24px rgba(217,119,6,0.15)' : 'var(--shadow-sm)'
+                    }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                      <strong style={{ color: 'var(--text-heading)', fontSize: '0.95rem' }}>{chat.userName} ({chat.userRole})</strong>
+                      <span style={{ fontSize: '0.75rem', color: chat.status === 'Open' ? '#F97316' : '#15803D', fontWeight: 700 }}>{chat.status}</span>
+                    </div>
+                    <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>Reason: {chat.reason}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Right Chat Takeover */}
+            {selectedChat ? (
+              <div className="card reveal-right reveal-delay-1" style={{ padding: 32, display: 'flex', flexDirection: 'column', height: 560 }}>
+                <div style={{ borderBottom: '1px solid var(--border-light)', paddingBottom: 16, marginBottom: 20 }}>
+                  <h4 style={{ color: 'var(--text-heading)', fontFamily: 'var(--font-display)', fontSize: '1.25rem' }}>Live Chat Takeover — {selectedChat.userName}</h4>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: 4 }}>Full AI transcript available before responding.</p>
+                </div>
+
+                <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 20, paddingRight: 10 }}>
+                  {selectedChat.messages.map((m, idx) => (
+                    <div key={idx} className="reveal-up" style={{
+                      animationDelay: `${idx * 0.1}s`,
+                      alignSelf: m.sender === 'user' ? 'flex-start' : m.sender === 'admin' ? 'flex-end' : 'flex-start',
+                      background: m.sender === 'user' ? 'var(--bg-card-warm)' : m.sender === 'admin' ? '#0D9488' : 'rgba(217,119,6,0.1)',
+                      padding: '12px 18px', borderRadius: 18, fontSize: '0.9rem', maxWidth: '80%',
+                      color: m.sender === 'admin' ? 'white' : 'var(--text-heading)',
+                      border: m.sender === 'user' ? '1px solid var(--border-light)' : 'none'
+                    }}>
+                      <div style={{ fontSize: '0.7rem', color: m.sender === 'admin' ? 'rgba(255,255,255,0.7)' : 'var(--text-light)', fontWeight: 600, marginBottom: 4 }}>{m.sender.toUpperCase()}</div>
+                      {m.text}
+                    </div>
+                  ))}
+                </div>
+
+                {selectedChat.status === 'Open' ? (
+                  <form onSubmit={handleResolveChat} style={{ display: 'flex', gap: 12 }}>
+                    <input type="text" placeholder="Type Official Reply..." value={adminReplyText} onChange={(e) => setAdminReplyText(e.target.value)} className="field-input" style={{ flex: 1, padding: '14px 20px' }} required />
+                    <button type="submit" className="btn-saffron card-lift" style={{ borderRadius: 16 }}><Send size={16} /> Resolve</button>
+                  </form>
+                ) : (
+                  <div className="reveal-scale" style={{ background: 'rgba(21,128,61,0.1)', color: '#15803D', padding: 14, borderRadius: 16, textAlign: 'center', fontSize: '0.9rem', fontWeight: 600 }}>
+                    <CheckCircle2 size={18} style={{ verticalAlign: 'middle', marginRight: 8 }} /> Issue resolved by Admin
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="card reveal-scale" style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>
+                Select a chat from the queue to view conversation history and reply.
+              </div>
+            )}
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+};
