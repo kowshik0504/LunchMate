@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppState } from './context/AppStateContext';
 import { Navbar } from './components/Navbar';
 import { AIChatDrawer } from './components/AIChatDrawer';
@@ -66,7 +66,7 @@ export default function App() {
             </div>
           )}
 
-          <Navbar onAIClick={() => setIsAIChatOpen(true)} />
+          <Navbar onOpenAIChat={() => setIsAIChatOpen(true)} />
 
           <div style={{ paddingTop: isDashboard ? 80 : 0 }}>
             {activeRole === 'landing' && <LandingPage />}

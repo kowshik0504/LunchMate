@@ -123,7 +123,8 @@ export const ParentDashboard = () => {
             <p className="reveal reveal-delay-2" style={{ color: 'var(--text-muted)', fontSize: '1.05rem', maxWidth: 440, marginBottom: 28, lineHeight: 1.6 }}>
               Student: <strong style={{ color: 'var(--text-heading)' }}>Aravind S.</strong> (Class 9-B)<br />
               School: DAV Higher Secondary School<br />
-              Target Lunch Time: <strong style={{ color: '#F97316' }}>12:30 PM</strong>
+              Target Lunch Time: <strong style={{ color: '#F97316' }}>12:30 PM</strong><br />
+              Subscription: <strong style={{ color: '#10B981' }}>Monthly Active User</strong>
             </p>
 
             <div className="reveal reveal-delay-3" style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
@@ -186,26 +187,6 @@ export const ParentDashboard = () => {
         {activeTab === 'orders' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
             
-            {pendingPaymentOrder && (
-              <div className="reveal" style={{ background: 'linear-gradient(135deg, #10B981, #059669)', borderRadius: 24, padding: 32, color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center', boxShadow: '0 12px 32px rgba(16,185,129,0.3)' }}>
-                <div>
-                  <h3 style={{ fontSize: '1.4rem', fontFamily: 'var(--font-display)', marginBottom: 8 }}>Trip Completed! Final Payment Pending</h3>
-                  <p style={{ opacity: 0.9, maxWidth: 500, lineHeight: 1.5 }}>
-                    The emergency delivery for {pendingPaymentOrder.studentName} was successful.
-                    Please pay the remaining 40% balance to the driver.
-                  </p>
-                </div>
-                <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                  <div style={{ fontSize: '2.4rem', fontWeight: 800, fontFamily: 'var(--font-display)' }}>₹{Math.round(pendingPaymentOrder.price * 0.4)}</div>
-                  <button 
-                    onClick={() => { updatePaymentStatus(pendingPaymentOrder.id, 'Fully Paid'); showToast('Payment sent via GPay successfully!', 'success'); }} 
-                    style={{ background: 'white', color: '#059669', border: 'none', padding: '14px 28px', borderRadius: 99, fontWeight: 800, cursor: 'pointer', fontSize: '1.05rem', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                    Pay via GPay
-                  </button>
-                </div>
-              </div>
-            )}
-
             {/* Premium header strip */}
             <div style={{
               display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -588,7 +569,7 @@ export const ParentDashboard = () => {
               </div>
 
               <button type="submit" className="btn-saffron card-lift" style={{ marginTop: 14, justifyContent: 'center', padding: '16px' }}>
-                ⚡ Dispatch Nearest Driver Now (₹65)
+                ⚡ Pay ₹65 Securely (LunchMate Escrow)
               </button>
             </form>
           </div>
@@ -605,9 +586,17 @@ export const ParentDashboard = () => {
 
               <button 
                 className="card-lift"
-                onClick={() => {
-                  setIsSubPaused(!isSubPaused);
-                  showToast(isSubPaused ? "Subscription Resumed!" : "Subscription Paused", "info");
+                onClick={() => { 
+                  if (!isSubPaused) {
+                    const confirmPause = window.confirm("Are you sure you want to pause deliveries?\n\nBy pausing, tomorrow's lunch delivery will be canceled (e.g., for sick leave or holidays). The unused meals are automatically saved and added to the end of your billing cycle so you never lose money.\n\nDo you want to pause now?");
+                    if (confirmPause) {
+                      setIsSubPaused(true); 
+                      showToast('Subscription Paused for Holidays', 'info');
+                    }
+                  } else {
+                    setIsSubPaused(false);
+                    showToast('Subscription Resumed!', 'success');
+                  }
                 }}
                 style={{
                   background: isSubPaused ? 'rgba(249,115,22,0.1)' : 'var(--bg-card)',

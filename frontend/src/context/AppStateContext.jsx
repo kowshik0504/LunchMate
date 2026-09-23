@@ -104,7 +104,7 @@ export const AppStateProvider = ({ children }) => {
       status: "Food Ready",
       pickupOtp: Math.floor(1000 + Math.random() * 9000).toString(),
       deliveryOtp: Math.floor(1000 + Math.random() * 9000).toString(),
-      paymentStatus: orderData.paymentMode === 'emergency' ? 'Advance Paid' : 'Fully Paid',
+      paymentStatus: orderData.paymentMode === 'emergency' ? 'Escrow Secured' : 'Monthly Pre-paid',
       ...orderData
     };
     setOrders(prev => [...prev, newOrder]);

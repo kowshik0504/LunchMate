@@ -1,0 +1,13 @@
+﻿const fs = require('fs');
+let c = fs.readFileSync('src/components/AIChatDrawer.jsx', 'utf8');
+c = c.replace(/â€¢/g, '•');
+c = c.replace(/ðŸ”’/g, '🔒');
+c = c.replace(/â­/g, '⭐');
+c = c.replace(/âœ…/g, '✅');
+c = c.replace(/âš/g, '⚠️');
+c = c.replace(/â‚¹/g, '₹');
+c = c.replace(/ï¿½/g, '•');
+c = c.replace(/s/g, '⚠️');
+c = c.replace(/dY"/g, '✅');
+c = c.replace(/dY'\?/g, '✅');
+fs.writeFileSync('src/components/AIChatDrawer.jsx', c, 'utf8');

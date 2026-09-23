@@ -55,6 +55,7 @@ export const DriverDashboard = () => {
   const assignedOrder = orders.find(o => o.driverId === activeDriver.id && o.status !== 'Delivered');
   const availableOrders = orders.filter(o => o.status === 'Food Ready' && !o.driverId);
   const completedOrders = orders.filter(o => o.driverId === activeDriver.id && o.status === 'Delivered');
+  const allMyOrders = orders.filter(o => o.driverId === activeDriver.id);
 
   useScrollReveal(activeDriverId + '-' + (assignedOrder ? 'assigned' : 'free') + '-' + activeTab);
 
@@ -104,26 +105,15 @@ export const DriverDashboard = () => {
             </div>
             
             <div className="reveal reveal-delay-1" style={{ marginBottom: 16 }}>
-              <select
-                value={activeDriverId}
-                onChange={(e) => setActiveDriverId(e.target.value)}
-                style={{ 
-                  background: 'transparent', border: 'none', color: 'var(--text-heading)', 
-                  fontSize: '3.2rem', fontFamily: 'var(--font-display)', fontWeight: 700, 
-                  cursor: 'pointer', outline: 'none', lineHeight: 1.05,
-                  padding: 0, margin: 0, appearance: 'none', width: '100%'
-                }}
-              >
-                {drivers.map(d => (
-                  <option key={d.id} value={d.id}>{d.name}</option>
-                ))}
-              </select>
+              <h1 style={{ fontSize: '3.2rem', fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text-heading)', margin: 0, lineHeight: 1.05 }}>
+                {activeDriver.name}
+              </h1>
             </div>
 
             <p className="reveal reveal-delay-2" style={{ color: 'var(--text-muted)', fontSize: '1.05rem', maxWidth: 440, marginBottom: 28, lineHeight: 1.6 }}>
               Vehicle: <strong style={{ color: 'var(--text-heading)' }}>{activeDriver.vehicle}</strong><br />
               Area: {activeDriver.area} <br />
-              Rating: ? <strong style={{ color: '#F97316' }}>{activeDriver.rating}</strong>
+              Rating: ⭐ <strong style={{ color: '#F97316' }}>{activeDriver.rating}</strong>
             </p>
 
             <div className="reveal reveal-delay-3" style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
@@ -155,7 +145,7 @@ export const DriverDashboard = () => {
                 border: activeDriver.status === 'Verified' ? '1px solid rgba(21,128,61,0.2)' : '1px solid rgba(249,115,22,0.2)',
                 fontSize: '0.72rem', padding: '4px 12px', borderRadius: 99, fontWeight: 700, letterSpacing: '0.06em'
               }}>
-                {activeDriver.status === 'Verified' ? '? ' : '? '}
+                {activeDriver.status === 'Verified' ? '✅ ' : '⚠️ '}
                 {activeDriver.status.toUpperCase()}
               </span>
             </div>
@@ -170,9 +160,9 @@ export const DriverDashboard = () => {
         {/* Tab Navigation */}
         <div className="reveal reveal-delay-1" style={{ display: 'flex', gap: 12, marginBottom: 30, borderBottom: '1px solid var(--border-light)', paddingBottom: 14 }}>
           {[
-            { id: 'home', label: '?? Route Dashboard' },
-            { id: 'earnings', label: '?? Earnings & Payments' },
-            { id: 'history', label: '?? Delivery History' }
+            { id: 'home', label: '🗺️ Route Dashboard' },
+            { id: 'earnings', label: '💰 Earnings & Payments' },
+            { id: 'history', label: '📜 Delivery History' }
           ].map((tab) => (
             <button
               key={tab.id}
@@ -199,7 +189,7 @@ export const DriverDashboard = () => {
               <div className="card reveal-scale reveal-delay-1 card-lift" style={{ padding: 26, background: 'rgba(21,128,61,0.03)', border: '1px solid rgba(21,128,61,0.1)' }}>
                 <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Today's Earnings</span>
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: '2.4rem', fontWeight: 700, color: '#15803D', margin: '8px 0 4px' }}>
-                  ?{activeDriver.earningsToday}
+                  ₹{activeDriver.earningsToday}
                 </div>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>Direct bank payout</span>
               </div>
@@ -215,7 +205,7 @@ export const DriverDashboard = () => {
               <div className="card reveal-scale reveal-delay-3 card-lift" style={{ padding: 26, background: 'rgba(249,115,22,0.03)', border: '1px solid rgba(249,115,22,0.1)' }}>
                 <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Wallet Balance</span>
                 <div style={{ fontFamily: 'var(--font-display)', fontSize: '2.4rem', fontWeight: 700, color: '#F97316', margin: '8px 0 4px' }}>
-                  ?1,420
+                  ₹1,420
                 </div>
                 <span style={{ fontSize: '0.75rem', color: 'var(--text-light)' }}>Auto-withdrawn weekly</span>
               </div>
@@ -300,7 +290,7 @@ export const DriverDashboard = () => {
             {/* Nearby Requests */}
             <div>
               <h3 className="reveal-left" style={{ fontSize: '1.4rem', fontFamily: 'var(--font-display)', marginBottom: 24, color: 'var(--text-heading)' }}>
-                ?? Nearby Delivery Requests in {activeDriver.area} ({availableOrders.length})
+                📡 Nearby Delivery Requests in {activeDriver.area} ({availableOrders.length})
               </h3>
 
               {!isOnline ? (
@@ -317,16 +307,16 @@ export const DriverDashboard = () => {
                     <div key={ord.id} className={`card reveal-scale reveal-delay-${(i%3)+1} card-lift`} style={{ padding: 26, border: '1px solid rgba(249,115,22,0.2)' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
                         <span style={{ color: '#F97316', fontWeight: 700, fontSize: '0.9rem' }}>{ord.id}</span>
-                        <span style={{ color: '#15803D', fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.3rem' }}>Earn ?{Math.round(ord.price * 0.85)}</span>
+                        <span style={{ color: '#15803D', fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.3rem' }}>Earn ₹{Math.round(ord.price * 0.85)}</span>
                       </div>
 
                       <div style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        <div><span style={{ color: 'var(--text-heading)', marginRight: 6 }}>?? Pickup:</span> {ord.pickupAddress}</div>
-                        <div><span style={{ color: 'var(--text-heading)', marginRight: 6 }}>?? Drop:</span> {ord.schoolName} ({ord.distanceKm} km)</div>
-                        <div><span style={{ color: 'var(--text-heading)', marginRight: 6 }}>? Target:</span> {ord.lunchTime}</div>
+                        <div><span style={{ color: 'var(--text-heading)', marginRight: 6 }}>📍 Pickup:</span> {ord.pickupAddress}</div>
+                        <div><span style={{ color: 'var(--text-heading)', marginRight: 6 }}>🏫 Drop:</span> {ord.schoolName} ({ord.distanceKm} km)</div>
+                        <div><span style={{ color: 'var(--text-heading)', marginRight: 6 }}>⏰ Target:</span> {ord.lunchTime}</div>
                         <div>
-                          <span style={{ color: 'var(--text-heading)', marginRight: 6 }}>?? Type:</span> 
-                          <strong style={{ color: ord.paymentMode === 'emergency' ? '#F97316' : '#10B981' }}>{ord.paymentMode === 'emergency' ? 'Emergency (Cash/GPay)' : 'Monthly Contract'}</strong>
+                          <span style={{ color: 'var(--text-heading)', marginRight: 6 }}>ðŸ’³ Type:</span> 
+                          <strong style={{ color: ord.paymentMode === 'emergency' ? '#F97316' : '#10B981' }}>{ord.paymentMode === 'emergency' ? 'Emergency (Escrow)' : 'Monthly Contract'}</strong>
                         </div>
                       </div>
 
@@ -341,146 +331,34 @@ export const DriverDashboard = () => {
           </div>
         )}
 
-        {/* EARNINGS TAB */}
-        {activeTab === 'earnings' && (
-          <div className="reveal">
-            <h3 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-display)', marginBottom: 24, color: 'var(--text-heading)' }}>
-              Earnings Breakdown
-            </h3>
-            
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24, marginBottom: 40 }}>
-              <div className="card" style={{ padding: 30, background: 'linear-gradient(135deg, rgba(21,128,61,0.05) 0%, rgba(21,128,61,0.15) 100%)', border: '1px solid rgba(21,128,61,0.2)' }}>
-                <h4 style={{ color: '#15803D', fontSize: '1.1rem', marginBottom: 12 }}>Emergency Deliveries</h4>
-                <div style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: '#15803D', marginBottom: 8 }}>?850</div>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>Earned directly from parents (Cash/GPay) via 60% advance and 40% completion payments.</p>
-              </div>
-              <div className="card" style={{ padding: 30, background: 'linear-gradient(135deg, rgba(13,148,136,0.05) 0%, rgba(13,148,136,0.15) 100%)', border: '1px solid rgba(13,148,136,0.2)' }}>
-                <h4 style={{ color: '#0D9488', fontSize: '1.1rem', marginBottom: 12 }}>Monthly Contracts</h4>
-                <div style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: '#0D9488', marginBottom: 8 }}>?570</div>
-                <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>60% advance paid to platform. Final settlement occurs at end of 28-day cycle.</p>
-              </div>
-            </div>
-            
-            <h4 style={{ fontSize: '1.2rem', fontFamily: 'var(--font-display)', marginBottom: 16, color: 'var(--text-heading)' }}>Recent Transactions</h4>
-            <div className="card" style={{ overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-                <thead style={{ background: 'var(--bg-base)', borderBottom: '1px solid var(--border-light)', textAlign: 'left' }}>
-                  <tr>
-                    <th style={{ padding: '16px 20px', color: 'var(--text-muted)', fontWeight: 600 }}>Date</th>
-                    <th style={{ padding: '16px 20px', color: 'var(--text-muted)', fontWeight: 600 }}>Order ID</th>
-                    <th style={{ padding: '16px 20px', color: 'var(--text-muted)', fontWeight: 600 }}>Type</th>
-                    <th style={{ padding: '16px 20px', color: 'var(--text-muted)', fontWeight: 600 }}>Amount Earned (85%)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {completedOrders.map((ord, idx) => (
-                    <tr key={idx} style={{ borderBottom: '1px solid var(--border-light)' }}>
-                      <td style={{ padding: '16px 20px', color: 'var(--text-heading)' }}>Today, {ord.lunchTime}</td>
-                      <td style={{ padding: '16px 20px', color: '#F97316', fontWeight: 600 }}>{ord.id}</td>
-                      <td style={{ padding: '16px 20px' }}>
-                        <span style={{ 
-                          background: ord.paymentMode === 'emergency' ? 'rgba(249,115,22,0.1)' : 'rgba(16,185,129,0.1)',
-                          color: ord.paymentMode === 'emergency' ? '#EA580C' : '#059669',
-                          padding: '4px 10px', borderRadius: 99, fontSize: '0.75rem', fontWeight: 700 
-                        }}>
-                          {ord.paymentMode === 'emergency' ? 'Emergency' : 'Monthly'}
-                        </span>
-                      </td>
-                      <td style={{ padding: '16px 20px', fontWeight: 700, color: '#15803D' }}>?{Math.round(ord.price * 0.85)}</td>
-                    </tr>
-                  ))}
-                  {completedOrders.length === 0 && (
-                    <tr>
-                      <td colSpan="4" style={{ padding: '30px', textAlign: 'center', color: 'var(--text-muted)' }}>No recent transactions.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* HISTORY TAB */}
-        {activeTab === 'history' && (
-          <div className="reveal">
-            <h3 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-display)', marginBottom: 24, color: 'var(--text-heading)' }}>
-              Delivery History
-            </h3>
-            
-            <div className="card" style={{ padding: 0, overflow: 'hidden' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-                <thead style={{ background: 'var(--bg-base)', borderBottom: '1px solid var(--border-light)', textAlign: 'left' }}>
-                  <tr>
-                    <th style={{ padding: '16px 20px', color: 'var(--text-muted)', fontWeight: 600 }}>Date</th>
-                    <th style={{ padding: '16px 20px', color: 'var(--text-muted)', fontWeight: 600 }}>Order ID</th>
-                    <th style={{ padding: '16px 20px', color: 'var(--text-muted)', fontWeight: 600 }}>Parent (Client)</th>
-                    <th style={{ padding: '16px 20px', color: 'var(--text-muted)', fontWeight: 600 }}>Mode</th>
-                    <th style={{ padding: '16px 20px', color: 'var(--text-muted)', fontWeight: 600 }}>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {completedOrders.map((ord, idx) => (
-                    <tr key={idx} style={{ borderBottom: '1px solid var(--border-light)' }}>
-                      <td style={{ padding: '16px 20px', color: 'var(--text-heading)' }}>Today</td>
-                      <td style={{ padding: '16px 20px', color: '#F97316', fontWeight: 600 }}>{ord.id}</td>
-                      <td style={{ padding: '16px 20px', color: 'var(--text-heading)', fontWeight: 600 }}>{ord.parentName}</td>
-                      <td style={{ padding: '16px 20px' }}>
-                        <span style={{ 
-                          background: ord.paymentMode === 'emergency' ? 'rgba(249,115,22,0.1)' : 'rgba(16,185,129,0.1)',
-                          color: ord.paymentMode === 'emergency' ? '#EA580C' : '#059669',
-                          padding: '4px 10px', borderRadius: 99, fontSize: '0.75rem', fontWeight: 700 
-                        }}>
-                          {ord.paymentMode === 'emergency' ? 'Emergency' : 'Monthly'}
-                        </span>
-                      </td>
-                      <td style={{ padding: '16px 20px' }}>
-                        <span style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#15803D', fontWeight: 600 }}>
-                          <CheckCircle size={15} /> Delivered
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                  {completedOrders.length === 0 && (
-                    <tr>
-                      <td colSpan="5" style={{ padding: '30px', textAlign: 'center', color: 'var(--text-muted)' }}>No completed deliveries yet.</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
-
-        {/* KYC Modal */}
-        {showKycModal && (
-          <div style={{ position: 'fixed', inset: 0, zIndex: 9999, background: 'rgba(26,18,11,0.6)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
-            <div className="card animate-slide-up" style={{ width: '100%', maxWidth: 540, padding: 36, boxShadow: '0 32px 80px rgba(26,18,11,0.2)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
-                <h3 style={{ color: 'var(--text-heading)', fontFamily: 'var(--font-display)', fontSize: '1.4rem' }}>Driver KYC Documents</h3>
-                <button onClick={() => setShowKycModal(false)} style={{ background: 'none', border: 'none', color: 'var(--text-muted)', cursor: 'pointer', fontSize: '1.4rem' }}>?</button>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14, fontSize: '0.9rem' }}>
-                <div style={{ background: 'rgba(26,18,11,0.03)', padding: '16px 20px', borderRadius: 16, display: 'flex', justifyContent: 'space-between', border: '1px solid var(--border-light)' }}>
-                  <span style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}><User size={16} /> Aadhaar Verification:</span>
-                  <strong style={{ color: '#15803D' }}>{activeDriver.documents.aadhaar}</strong>
+                  {/* EARNINGS TAB */}
+          {activeTab === 'earnings' && (
+            <div className="reveal">
+              <h3 style={{ fontSize: '1.8rem', fontFamily: 'var(--font-display)', marginBottom: 24, color: 'var(--text-heading)' }}>
+                Earnings Breakdown
+              </h3>
+              
+                              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24, marginBottom: 40 }}>
+                  <div className="card" style={{ padding: 30, background: 'linear-gradient(135deg, rgba(21,128,61,0.05) 0%, rgba(21,128,61,0.15) 100%)', border: '1px solid rgba(21,128,61,0.2)' }}>
+                    <h4 style={{ color: '#15803D', fontSize: '1.1rem', marginBottom: 12 }}>Emergency Deliveries</h4>
+                    <div style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: '#15803D', marginBottom: 8 }}>₹850</div>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>100% pre-paid by parents into LunchMate Escrow. Instant payout on delivery completion.</p>
+                  </div>
+                  <div className="card" style={{ padding: 30, background: 'linear-gradient(135deg, rgba(13,148,136,0.05) 0%, rgba(13,148,136,0.15) 100%)', border: '1px solid rgba(13,148,136,0.2)' }}>
+                    <h4 style={{ color: '#0D9488', fontSize: '1.1rem', marginBottom: 12 }}>Monthly Contracts</h4>
+                    <div style={{ fontSize: '2.5rem', fontWeight: 800, fontFamily: 'var(--font-display)', color: '#0D9488', marginBottom: 8 }}>₹570</div>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>60% advance paid to platform. Final settlement occurs at end of 28-day cycle.</p>
+                  </div>
                 </div>
-                <div style={{ background: 'rgba(26,18,11,0.03)', padding: '16px 20px', borderRadius: 16, display: 'flex', justifyContent: 'space-between', border: '1px solid var(--border-light)' }}>
-                  <span style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}><CreditCard size={16} /> Driver's License:</span>
-                  <strong style={{ color: '#15803D' }}>{activeDriver.documents.license}</strong>
-                </div>
-                <div style={{ background: 'rgba(26,18,11,0.03)', padding: '16px 20px', borderRadius: 16, display: 'flex', justifyContent: 'space-between', border: '1px solid var(--border-light)' }}>
-                  <span style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}><FileText size={16} /> PAN Card:</span>
-                  <strong style={{ color: '#15803D' }}>{activeDriver.documents.pan}</strong>
-                </div>
-                <div style={{ background: 'rgba(26,18,11,0.03)', padding: '16px 20px', borderRadius: 16, display: 'flex', justifyContent: 'space-between', border: '1px solid var(--border-light)' }}>
-                  <span style={{ color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: 6 }}><Camera size={16} /> Live Selfie Match:</span>
-                  <strong style={{ color: '#15803D' }}>{activeDriver.documents.photo}</strong>
-                </div>
-              </div>
-            </div>
           </div>
         )}
       </div>
     </div>
   );
 };
+
+
+
+
+
+

@@ -15,10 +15,27 @@ export const Navbar = ({ onOpenAIChat }) => {
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 20);
+
+      if (activeRole === 'landing') {
+        const sections = ['home', 'track', 'menu', 'testimonials', 'faq'];
+        let current = 'home';
+        for (const section of sections) {
+          const el = document.getElementById(section);
+          if (el) {
+            const rect = el.getBoundingClientRect();
+            // If the section's top has passed the middle of the viewport
+            if (rect.top <= window.innerHeight / 3) {
+              current = section;
+            }
+          }
+        }
+        setActiveLink(current);
+      }
     };
     window.addEventListener('scroll', onScroll);
+    onScroll();
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [activeRole]);
 
   let navLinks = [];
   if (activeRole === 'landing') {
