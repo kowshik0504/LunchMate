@@ -1,4 +1,4 @@
-﻿export const initialDrivers = [
+export const initialDrivers = [
   {
     id: "DRV-101",
     name: "Ramesh Kumar",
@@ -64,15 +64,16 @@
 export const initialOrders = [
   {
     id: "LUNCH-9901",
-    parentName: "Meenakshi Sundaram",
+    parentName: "Parent",
     parentPhone: "+91 94441 55667",
-    studentName: "Aravind Sundaram",
+    studentName: "Akash S.",
     schoolName: "DAV Higher Secondary School, Gopalapuram",
+    schoolMapsLink: "https://www.google.com/maps/search/?api=1&query=DAV+Higher+Secondary+School+Gopalapuram+Chennai",
     classDept: "Class 9-B (Roll 14)",
     lunchTime: "12:30 PM",
     pickupAddress: "No. 42, 3rd Main Road, Anna Nagar East, Chennai",
     deliveryAddress: "DAV HSS Gate 2, Gopalapuram",
-    distanceKm: 4.2,
+    distanceKm: 3.2,
     price: 50,
     paymentMode: "emergency",
     paymentStatus: "Advance Paid",
@@ -97,6 +98,7 @@ export const initialOrders = [
     parentPhone: "+91 98888 12345",
     studentName: "Varun Rajan",
     schoolName: "KV Ashok Nagar",
+    schoolMapsLink: "https://www.google.com/maps/search/?api=1&query=Kendriya+Vidyalaya+Ashok+Nagar+Chennai",
     classDept: "Class 10-A",
     lunchTime: "12:15 PM",
     pickupAddress: "Ashok Nagar, Chennai",
@@ -130,8 +132,8 @@ export const initialOrders = [
     lunchTime: "12:45 PM",
     pickupAddress: "Surapet, Chennai",
     deliveryAddress: "Velammal Gate 3",
-    distanceKm: 5.1,
-    price: 60,
+    distanceKm: 3.2,
+    price: 50,
     paymentMode: "emergency",
     paymentStatus: "Fully Paid",
     driverId: "DRV-101",
@@ -154,26 +156,60 @@ export const initialOrders = [
 export const subscriptionPlans = [
   {
     id: 'monthly',
-    name: '20-Day Monthly Pass (Standard)',
-    pricePerDay: '₹120/day',
-    discount: 'Save 15% vs Daily',
+    name: '20-Day Standard Pass (Batched Route)',
+    pricePerDay: '₹42/day',
+    discount: 'Fair Dabbawala Route',
     popular: true,
-    features: ['Monday to Friday delivery', 'Pause/skip up to 3 days', 'Fixed driver assigned', 'Zero delivery fees']
+    badge: 'MOST POPULAR',
+    features: [
+      'Corridor delivery (0–3 km base)',
+      'Assigned verified rider (Ramesh 4.9★)',
+      'Zero-Hunger Canteen backup included',
+      'Free pause on sick days & holidays'
+    ]
+  },
+  {
+    id: 'vip',
+    name: '20-Day Premium VIP Pass (Dedicated 1:1)',
+    pricePerDay: '₹58/day',
+    discount: 'Express 10-Min Window',
+    popular: false,
+    badge: 'PRIORITY EXPRESS',
+    features: [
+      'Dedicated solo rider (zero batching)',
+      'Guaranteed 10-min lunch bell window',
+      'Exclusive 1:1 standby floater backup',
+      '₹5,000 transit & tiffin container cover'
+    ]
   },
   {
     id: 'quarterly',
-    name: '60-Day Quarterly Pass',
-    pricePerDay: '₹105/day',
-    discount: 'Save 25% vs Daily',
+    name: '60-Day Term Pass (Same Driver Lock)',
+    pricePerDay: '₹35/day',
+    discount: 'Save ₹420 vs Standard',
     popular: false,
-    features: ['Highest priority delivery', 'Pause/skip up to 10 days', 'Dedicated support manager', 'Special surprise treats']
+    badge: 'BEST VALUE (3 MONTHS)',
+    features: [
+      'Permanent same driver lock all term',
+      'Lowest rate: Only ₹35/day across 60 days',
+      '8 Free emergency holiday pause days',
+      'School reception priority handover'
+    ]
   },
   {
     id: 'weekly',
-    name: '5-Day Trial Pass',
-    pricePerDay: '₹140/day',
-    discount: 'Pay-as-you-go flexibility',
+    name: '5-Day Trial Pass (Starter Week)',
+    pricePerDay: '₹50/day',
+    discount: 'No Long Commitment',
     popular: false,
-    features: ['Perfect for trying out', 'Cancel anytime', 'Standard delivery support']
+    badge: '1-WEEK TRIAL',
+    features: [
+      '5 school weekdays trial test',
+      'Live 3-sec GPS telemetry & Double OTP',
+      'Zero-Hunger school canteen guarantee',
+      '100% credit rollover on pass upgrade'
+    ]
   }
 ];
+
+

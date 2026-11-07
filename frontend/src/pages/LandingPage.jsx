@@ -58,12 +58,16 @@ const PricingCalc = () => {
   const [emergency, setEmergency] = useState(false);
 
   const calc = (d, em) => {
-    let b = d <= 5 ? 40 + (d/5)*20 : d <= 10 ? 60 + ((d-5)/5)*20 : 80 + ((d-10)/5)*20;
-    if (em) b += 15;
-    return Math.round(b);
+    // School Corridor Dabbawala Pass: ₹42 base (first 3.0 km), +₹8/km beyond 3.0 km
+    // Emergency Solo Express: ₹65 base (first 3.0 km), +₹10/km beyond 3.0 km
+    const extraKm = Math.max(0, d - 3.0);
+    if (em) {
+      return Math.round(65 + extraKm * 10);
+    }
+    return Math.round(42 + extraKm * 8);
   };
   const price = calc(dist, emergency);
-  const eta   = Math.round(14 + dist * 3.2);
+  const eta   = emergency ? Math.round(8 + dist * 2.5) : Math.round(15 + dist * 3.0);
   const drvr  = Math.round(price * 0.85);
   const plat  = price - drvr;
   const trackW = `${Math.round((dist / 15) * 100)}%`;
@@ -114,7 +118,9 @@ const PricingCalc = () => {
           <Zap size={18} color={emergency ? '#F97316' : '#BDB0A5'} />
           <div>
             <div style={{ color: emergency ? 'var(--text-heading)' : 'var(--text-muted)', fontWeight: 600, fontSize: '0.88rem' }}>Emergency Express</div>
-            <div style={{ color: 'var(--text-light)', fontSize: '0.73rem' }}>Priority 2-min driver match (+₹15)</div>
+            <div style={{ color: 'var(--text-light)', fontSize: '0.73rem' }}>
+              {emergency ? 'Priority solo rider match (₹65 base + ₹10/km)' : 'Corridor pass rate (₹42 base + ₹8/km)'}
+            </div>
           </div>
         </div>
         <div style={{
@@ -316,8 +322,9 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {/* ── HOW IT WORKS ─────────────────────────────────── */}
-      <section id="track" style={{ padding: '110px 0', background: 'var(--bg-base)' }}>
+      {/* ── HOW IT WORKS / SIMPLE WORKFLOW ── */}
+      <section id="workflow" style={{ padding: '110px 0', background: 'var(--bg-base)' }}>
+        <span id="track" style={{ display: 'none' }} />
         <div className="container">
           <div style={{ textAlign: 'center', maxWidth: 600, margin: '0 auto 72px' }}>
             <div className="section-badge reveal" style={{ marginBottom: 18 }}>Simple Workflow</div>
@@ -364,8 +371,9 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {/* ── FEATURES ─────────────────────────────────────── */}
-      <section id="menu" style={{ padding: '80px 0 110px', background: 'var(--bg-section)' }}>
+      {/* ── PLATFORM FEATURES ── */}
+      <section id="features" style={{ padding: '80px 0 110px', background: 'var(--bg-section)' }}>
+        <span id="menu" style={{ display: 'none' }} />
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: '5fr 7fr', gap: 70, alignItems: 'center', marginBottom: 72 }}>
             <div>
@@ -415,9 +423,9 @@ export const LandingPage = () => {
               </p>
               <div className="reveal-left reveal-delay-3" style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {[
-                  ['85% Driver Payout', 'Fair earnings attract the best local delivery partners.', <Bike size={16} color="#0D9488" />],
-                  ['Emergency Express', 'Priority booking with only ₹15 surcharge.', <Zap size={16} color="#0D9488" />],
-                  ['Monthly Saves 30%', 'Subscribe monthly and save compared to daily rates.', <BarChart3 size={16} color="#0D9488" />],
+                  ['85% Driver Payout', 'Fair earnings attract verified local delivery partners.', <Bike size={16} color="#0D9488" />],
+                  ['Emergency Express', 'Solo rider rapid dispatch starting at ₹65 with live GPS.', <Zap size={16} color="#0D9488" />],
+                  ['Passes from ₹35/day', 'Save up to 50% vs on-demand with our Dabbawala pass.', <BarChart3 size={16} color="#0D9488" />],
                 ].map(([title, desc, icon], i) => (
                   <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
                     <div style={{ marginTop: 2 }}>{icon}</div>
@@ -436,8 +444,9 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {/* ── SUBSCRIPTION PLANS ────────────────────────────── */}
-      <section id="testimonials" style={{ padding: '90px 0 110px', background: 'var(--bg-dark)' }} className="dark-section">
+      {/* ── SUBSCRIPTION PLANS ── */}
+      <section id="pricing" style={{ padding: '90px 0 110px', background: 'var(--bg-dark)' }} className="dark-section">
+        <span id="testimonials" style={{ display: 'none' }} />
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 60 }}>
             <div className="section-badge reveal" style={{ marginBottom: 18,
@@ -452,42 +461,57 @@ export const LandingPage = () => {
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24 }}>
             {subscriptionPlans.map((plan, i) => (
               <div key={plan.id} className={`reveal reveal-delay-${i + 1} card-lift`} style={{
                 background: plan.popular ? 'rgba(249,115,22,0.08)' : 'rgba(255,255,255,0.04)',
                 border: plan.popular ? '1.5px solid rgba(249,115,22,0.45)' : '1px solid rgba(255,255,255,0.08)',
                 borderRadius: 28, padding: '32px 26px', position: 'relative',
                 boxShadow: plan.popular ? '0 20px 60px rgba(249,115,22,0.12)' : 'none',
+                display: 'flex', flexDirection: 'column', justifyContent: 'space-between',
               }}>
-                {plan.popular && (
-                  <div style={{
-                    position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)',
-                    background: '#F97316', color: 'white',
-                    fontSize: '0.68rem', fontWeight: 700, padding: '4px 16px', borderRadius: 99,
-                    letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap',
-                    boxShadow: '0 4px 14px rgba(249,115,22,0.45)', fontFamily: 'var(--font-ui)',
-                  }}>Most Popular</div>
-                )}
-                <h3 style={{ fontSize: '1.15rem', marginBottom: 10, color: 'white' }}>{plan.name}</h3>
-                <div style={{ fontFamily: "'Playfair Display',serif", fontSize: '2.2rem', fontWeight: 700,
-                  color: plan.popular ? '#F97316' : '#2DD4BF', marginBottom: 4 }}>
-                  {plan.pricePerDay}
+                <div>
+                  {plan.badge && (
+                    <div style={{
+                      position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)',
+                      background: plan.popular ? '#F97316' : (plan.badge.includes('VIP') || plan.badge.includes('PRIORITY') ? '#EA580C' : 'rgba(45,212,191,0.2)'),
+                      color: plan.popular || plan.badge.includes('VIP') || plan.badge.includes('PRIORITY') ? 'white' : '#2DD4BF',
+                      border: plan.popular ? 'none' : '1px solid rgba(45,212,191,0.4)',
+                      fontSize: '0.66rem', fontWeight: 800, padding: '4px 16px', borderRadius: 99,
+                      letterSpacing: '0.08em', textTransform: 'uppercase', whiteSpace: 'nowrap',
+                      boxShadow: plan.popular ? '0 4px 14px rgba(249,115,22,0.45)' : 'none', fontFamily: 'var(--font-ui)',
+                    }}>{plan.badge}</div>
+                  )}
+                  <h3 style={{
+                    fontFamily: "var(--font-display), 'Playfair Display', Georgia, serif",
+                    fontSize: '1.24rem',
+                    fontWeight: 700,
+                    letterSpacing: '-0.01em',
+                    lineHeight: 1.25,
+                    marginBottom: 10,
+                    color: 'white'
+                  }}>
+                    {plan.name}
+                  </h3>
+                  <div style={{ fontFamily: "'Playfair Display',serif", fontSize: '2.2rem', fontWeight: 700,
+                    color: plan.popular ? '#F97316' : '#2DD4BF', marginBottom: 4 }}>
+                    {plan.pricePerDay}
+                  </div>
+                  <div style={{ display: 'inline-block', background: 'rgba(249,115,22,0.12)', color: '#FCA87A',
+                    fontSize: '0.7rem', fontWeight: 700, padding: '3px 10px', borderRadius: 99,
+                    border: '1px solid rgba(249,115,22,0.2)', marginBottom: 24 }}>
+                    {plan.discount}
+                  </div>
+                  <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}>
+                    {plan.features.map((feat, j) => (
+                      <li key={j} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.84rem',
+                        color: 'rgba(255,255,255,0.7)', lineHeight: 1.35 }}>
+                        <CheckCircle size={15} color={plan.popular ? '#F97316' : '#2DD4BF'} style={{ flexShrink: 0 }} />
+                        <span>{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <div style={{ display: 'inline-block', background: 'rgba(249,115,22,0.12)', color: '#FCA87A',
-                  fontSize: '0.7rem', fontWeight: 700, padding: '3px 10px', borderRadius: 99,
-                  border: '1px solid rgba(249,115,22,0.2)', marginBottom: 24 }}>
-                  {plan.discount}
-                </div>
-                <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 28 }}>
-                  {plan.features.map((feat, j) => (
-                    <li key={j} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.85rem',
-                      color: 'rgba(255,255,255,0.65)' }}>
-                      <CheckCircle size={15} color={plan.popular ? '#F97316' : '#2DD4BF'} style={{ flexShrink: 0 }} />
-                      {feat}
-                    </li>
-                  ))}
-                </ul>
                 <button onClick={() => openLogin('parent')}
                   className={plan.popular ? 'btn-saffron' : 'btn-outline'}
                   style={{ width: '100%', justifyContent: 'center',
@@ -500,8 +524,9 @@ export const LandingPage = () => {
         </div>
       </section>
 
-      {/* ── FINAL CTA ─────────────────────────────────────── */}
-      <section id="faq" style={{ padding: '110px 0 130px', background: 'var(--bg-section)' }}>
+      {/* ── FINAL CTA / START TODAY ── */}
+      <section id="start" style={{ padding: '110px 0 130px', background: 'var(--bg-section)' }}>
+        <span id="faq" style={{ display: 'none' }} />
         <div className="container">
           <div className="reveal" style={{
             background: 'var(--bg-card)', border: '1px solid var(--border-light)',

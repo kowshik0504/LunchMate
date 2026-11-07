@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 import { useAppState } from '../context/AppStateContext';
-import { ShieldCheck, AlertTriangle, Send, Check, FileText, BarChart3, Bike, Bot, CheckCircle2 } from 'lucide-react';
+import { ShieldCheck, AlertTriangle, Send, Check, FileText, BarChart3, Bike, Bot, CheckCircle2, GraduationCap, MapPin, ExternalLink, X, Building2 } from 'lucide-react';
 import { AdminHeroVisual } from '../components/AdminHeroVisual';
 
 const useScrollReveal = (dependency) => {
@@ -26,7 +26,19 @@ const useScrollReveal = (dependency) => {
 
 export const AdminDashboard = () => {
   
-  const { darkMode, drivers, verifyDriverStatus, orders, escalatedChats, resolveEscalatedChat, showToast } = useAppState();
+  const { 
+    darkMode, 
+    drivers, 
+    verifyDriverStatus, 
+    orders, 
+    escalatedChats, 
+    resolveEscalatedChat, 
+    showToast,
+    pendingSchools = [],
+    approvedSchools = [],
+    approveCustomSchool,
+    rejectCustomSchool
+  } = useAppState();
 
   const [activeTab, setActiveTab] = useState('verification');
   const [selectedChat, setSelectedChat] = useState(escalatedChats[0] || null);
@@ -125,6 +137,7 @@ export const AdminDashboard = () => {
         <div className="reveal reveal-delay-1" style={{ display: 'flex', gap: 12, marginBottom: 30, borderBottom: '1px solid var(--border-light)', paddingBottom: 14 }}>
           {[
             { id: 'verification', label: <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><FileText size={16} /> Driver Approvals ({pendingDrivers.length})</span> },
+            { id: 'schoolApprovals', label: <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><GraduationCap size={16} /> Unlisted Schools ({pendingSchools.length})</span> },
             { id: 'analytics', label: <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><BarChart3 size={16} /> Analytics & Revenue Split</span> },
             { id: 'activeOrders', label: <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Bike size={16} /> Live Fleet Monitor ({orders.length})</span> },
             { id: 'supportEscalation', label: <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}><Bot size={16} /> AI Inbox ({escalatedChats.filter(c => c.status === 'Open').length})</span> }
@@ -281,6 +294,258 @@ export const AdminDashboard = () => {
           </div>
         )}
 
+        {/* TAB: UNLISTED SCHOOL VERIFICATIONS & REGISTRY APPROVALS */}
+        {activeTab === 'schoolApprovals' && (
+          <div>
+            {/* Top Metric Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 20, marginBottom: 32 }}>
+              <div className="card reveal-scale card-lift" style={{ padding: 22, background: 'rgba(249,115,22,0.04)', border: '1px solid rgba(249,115,22,0.25)' }}>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', fontWeight: 600 }}>Pending School Verifications</span>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '2.2rem', fontWeight: 700, color: '#F97316', margin: '6px 0 2px' }}>
+                  {pendingSchools.length}
+                </div>
+                <span style={{ fontSize: '0.74rem', color: '#EA580C', fontWeight: 600 }}>Requires gate location verification</span>
+              </div>
+
+              <div className="card reveal-scale reveal-delay-1 card-lift" style={{ padding: 22, background: 'rgba(16,185,129,0.04)', border: '1px solid rgba(16,185,129,0.25)' }}>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', fontWeight: 600 }}>Approved & Added to Registry</span>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '2.2rem', fontWeight: 700, color: '#10B981', margin: '6px 0 2px' }}>
+                  {approvedSchools.length}
+                </div>
+                <span style={{ fontSize: '0.74rem', color: '#059669', fontWeight: 600 }}>Active in district dropdowns</span>
+              </div>
+
+              <div className="card reveal-scale reveal-delay-2 card-lift" style={{ padding: 22, background: 'rgba(59,130,246,0.04)', border: '1px solid rgba(59,130,246,0.25)' }}>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', fontWeight: 600 }}>All TN Districts</span>
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: '2.2rem', fontWeight: 700, color: '#3B82F6', margin: '6px 0 2px' }}>
+                  38
+                </div>
+                <span style={{ fontSize: '0.74rem', color: '#2563EB', fontWeight: 600 }}>Tamil Nadu district registry</span>
+              </div>
+            </div>
+
+            {/* Pending Approvals Section */}
+            <div style={{ marginBottom: 40 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18, flexWrap: 'wrap', gap: 10 }}>
+                <div>
+                  <h3 className="reveal-left" style={{ fontSize: '1.4rem', fontFamily: 'var(--font-display)', color: 'var(--text-heading)', margin: 0 }}>
+                    Unlisted School Verification Queue
+                  </h3>
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', margin: '4px 0 0' }}>
+                    Inspect the submitted school entrance on Google Maps, verify GPS coordinates, and approve into the official registry.
+                  </p>
+                </div>
+                <span style={{
+                  background: pendingSchools.length > 0 ? 'rgba(249,115,22,0.15)' : 'rgba(16,185,129,0.15)',
+                  color: pendingSchools.length > 0 ? '#EA580C' : '#10B981',
+                  padding: '6px 16px', borderRadius: 99, fontSize: '0.8rem', fontWeight: 700
+                }}>
+                  {pendingSchools.length} Pending Approval
+                </span>
+              </div>
+
+              {pendingSchools.length === 0 ? (
+                <div className="card reveal-scale" style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)', borderRadius: 16 }}>
+                  <CheckCircle2 size={24} style={{ verticalAlign: 'middle', marginRight: 8, color: '#10B981' }} />
+                  All unlisted school submissions have been verified and approved into the registry!
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: 20 }}>
+                  {pendingSchools.map((sch) => (
+                    <div
+                      key={sch.id}
+                      className="card card-lift reveal-scale"
+                      style={{
+                        padding: 24,
+                        border: '1.5px solid rgba(249,115,22,0.35)',
+                        borderRadius: 18,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'space-between'
+                      }}
+                    >
+                      <div>
+                        {/* Header Badges */}
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, marginBottom: 12 }}>
+                          <div>
+                            <span style={{
+                              background: 'rgba(249,115,22,0.12)',
+                              color: '#EA580C',
+                              padding: '3px 10px',
+                              borderRadius: 8,
+                              fontSize: '0.72rem',
+                              fontWeight: 800,
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.04em'
+                            }}>
+                              {sch.district} • {sch.board}
+                            </span>
+                            <h4 style={{ color: 'var(--text-heading)', fontSize: '1.18rem', fontFamily: 'var(--font-display)', margin: '8px 0 2px' }}>
+                              {sch.name}
+                            </h4>
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: 4 }}>
+                              <MapPin size={13} style={{ color: '#EA580C' }} /> {sch.area || sch.district}
+                            </span>
+                          </div>
+                          <span style={{
+                            background: 'rgba(234, 88, 12, 0.12)',
+                            color: '#EA580C',
+                            padding: '4px 10px',
+                            borderRadius: 10,
+                            fontSize: '0.72rem',
+                            fontWeight: 700,
+                            whiteSpace: 'nowrap'
+                          }}>
+                            Pending Review
+                          </span>
+                        </div>
+
+                        {/* Submitter & GPS Details */}
+                        <div style={{
+                          background: 'var(--bg-card-warm)',
+                          padding: 14,
+                          borderRadius: 12,
+                          fontSize: '0.82rem',
+                          color: 'var(--text-muted)',
+                          margin: '14px 0',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: 6,
+                          border: '1px solid var(--border-light)'
+                        }}>
+                          <div>
+                            Submitted By: <strong style={{ color: 'var(--text-heading)' }}>{sch.submittedBy}</strong> ({sch.studentName} — {sch.studentClass})
+                          </div>
+                          <div>
+                            GPS Coordinates: <strong style={{ color: '#10B981', fontFamily: 'monospace' }}>{sch.lat.toFixed(4)}°N, {sch.lng.toFixed(4)}°E</strong>
+                          </div>
+                          <div>
+                            Submitted: <span style={{ color: 'var(--text-light)' }}>{sch.submittedAt}</span>
+                          </div>
+                        </div>
+
+                        {/* Google Maps External Verification Button */}
+                        <div style={{ marginBottom: 18 }}>
+                          <label style={{ display: 'block', fontSize: '0.68rem', fontWeight: 800, textTransform: 'uppercase', color: '#EA580C', marginBottom: 5 }}>
+                            Google Maps Link (Parent Submitted Gate)
+                          </label>
+                          <a
+                            href={sch.mapsLink}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: 6,
+                              padding: '8px 14px',
+                              borderRadius: 10,
+                              background: darkMode ? 'rgba(255,255,255,0.06)' : '#F1F5F9',
+                              border: '1px solid var(--border-medium)',
+                              color: '#3B82F6',
+                              fontSize: '0.82rem',
+                              fontWeight: 700,
+                              textDecoration: 'none',
+                              maxWidth: '100%',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              whiteSpace: 'nowrap'
+                            }}
+                            title="Click to open gate in Google Maps"
+                          >
+                            <ExternalLink size={14} /> Open in Google Maps (Verify Gate) ↗
+                          </a>
+                        </div>
+                      </div>
+
+                      {/* Approval Actions */}
+                      <div style={{ display: 'flex', gap: 10, marginTop: 12, paddingTop: 14, borderTop: '1px solid var(--border-light)' }}>
+                        <button
+                          type="button"
+                          onClick={() => approveCustomSchool(sch.id)}
+                          className="btn-primary"
+                          style={{
+                            flex: 1,
+                            justifyContent: 'center',
+                            background: '#15803D',
+                            padding: '12px 16px',
+                            fontSize: '0.88rem',
+                            borderRadius: 12
+                          }}
+                        >
+                          <Check size={16} style={{ marginRight: 6 }} /> Approve & Add to School Registry
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => rejectCustomSchool(sch.id)}
+                          className="btn-outline"
+                          style={{
+                            padding: '12px 16px',
+                            borderColor: 'rgba(239,68,68,0.4)',
+                            color: '#EF4444',
+                            fontSize: '0.88rem',
+                            borderRadius: 12
+                          }}
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Approved Registry Directory */}
+            {approvedSchools.length > 0 && (
+              <div>
+                <h3 className="reveal-left" style={{ fontSize: '1.3rem', fontFamily: 'var(--font-display)', color: 'var(--text-heading)', marginBottom: 16 }}>
+                  Active Approved Schools in Registry ({approvedSchools.length})
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: 16 }}>
+                  {approvedSchools.map((sch) => (
+                    <div
+                      key={sch.id}
+                      className="card card-lift"
+                      style={{
+                        padding: 18,
+                        borderRadius: 14,
+                        border: '1px solid rgba(16,185,129,0.3)',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}
+                    >
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                          <span style={{ color: 'var(--text-heading)', fontWeight: 700, fontSize: '0.98rem' }}>
+                            {sch.name}
+                          </span>
+                        </div>
+                        <div style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>
+                          {sch.district} • {sch.board} • {sch.area || 'Verified Area'}
+                        </div>
+                      </div>
+                      <span style={{
+                        background: 'rgba(16,185,129,0.12)',
+                        color: '#10B981',
+                        padding: '4px 10px',
+                        borderRadius: 8,
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4
+                      }}>
+                        <CheckCircle2 size={13} /> In Registry
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* TAB 2: ANALYTICS */}
         {activeTab === 'analytics' && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 24, marginBottom: 36 }}>
@@ -427,3 +692,5 @@ export const AdminDashboard = () => {
     </div>
   );
 };
+
+export default AdminDashboard;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 import { useAppState } from '../context/AppStateContext';
-import { Truck, Navigation, Key, MapPin, Power, Bike, FileText, User, CreditCard, Camera, ExternalLink, CheckCircle, Clock } from 'lucide-react';
+import { Truck, Navigation, Key, MapPin, Power, Bike, FileText, User, CreditCard, Camera, ExternalLink, CheckCircle, Clock, Phone } from 'lucide-react';
 import { DriverHeroVisual } from '../components/DriverHeroVisual';
 import { DriverActiveRide } from '../components/DriverActiveRide';
 
@@ -228,12 +228,61 @@ export const DriverDashboard = () => {
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 30 }}>
-                  <div style={{ background: 'rgba(249,115,22,0.05)', padding: 20, borderRadius: 20, border: '1px solid rgba(249,115,22,0.1)' }}>
-                    <span style={{ color: '#F97316', fontWeight: 600, fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                      <MapPin size={15} /> PICKUP (Parent Kitchen)
-                    </span>
-                    <div style={{ color: 'var(--text-heading)', fontWeight: 600, fontSize: '1.05rem' }}>{assignedOrder.parentName}</div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: 4 }}>{assignedOrder.pickupAddress}</div>
+                  <div style={{ background: 'rgba(249,115,22,0.06)', padding: 22, borderRadius: 20, border: '1.5px solid rgba(249,115,22,0.25)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+                      <span style={{ color: '#F97316', fontWeight: 800, fontSize: '0.82rem', display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <MapPin size={16} /> PICKUP (Exact Location)
+                      </span>
+                      {assignedOrder.paymentMode === 'emergency' && (
+                        <span style={{ background: 'rgba(249,115,22,0.18)', color: '#EA580C', padding: '3px 9px', borderRadius: 6, fontSize: '0.7rem', fontWeight: 800 }}>
+                          ⚡ SOLO RAPID PICKUP
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ color: 'var(--text-heading)', fontWeight: 800, fontSize: '1.1rem' }}>{assignedOrder.parentName}</div>
+                    <div style={{ 
+                      color: 'var(--text-heading)', 
+                      fontSize: '0.9rem', 
+                      lineHeight: 1.5, 
+                      marginTop: 8, 
+                      background: 'rgba(255,255,255,0.05)', 
+                      padding: '10px 14px', 
+                      borderRadius: 12, 
+                      border: '1px solid rgba(249,115,22,0.15)',
+                      fontWeight: 600
+                    }}>
+                      📍 <strong>Address Details:</strong><br />
+                      {assignedOrder.pickupAddress}
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 10, marginTop: 12, flexWrap: 'wrap' }}>
+                      <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(assignedOrder.pickupAddress)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          background: 'linear-gradient(135deg, #F97316, #EA580C)',
+                          color: '#FFF', padding: '8px 14px', borderRadius: 10,
+                          fontSize: '0.76rem', fontWeight: 800, textDecoration: 'none',
+                          display: 'inline-flex', alignItems: 'center', gap: 6,
+                          boxShadow: '0 4px 12px rgba(249,115,22,0.25)'
+                        }}
+                      >
+                        <Navigation size={13} /> Open in Google Maps
+                      </a>
+                      <a
+                        href={`tel:${assignedOrder.parentPhone || '+919444155667'}`}
+                        style={{
+                          background: 'rgba(16,185,129,0.12)',
+                          color: '#059669', border: '1px solid rgba(16,185,129,0.3)',
+                          padding: '8px 14px', borderRadius: 10,
+                          fontSize: '0.76rem', fontWeight: 800, textDecoration: 'none',
+                          display: 'inline-flex', alignItems: 'center', gap: 6
+                        }}
+                      >
+                        <Phone size={13} /> Call Parent
+                      </a>
+                    </div>
                   </div>
 
                   <div style={{ background: 'rgba(13,148,136,0.05)', padding: 20, borderRadius: 20, border: '1px solid rgba(13,148,136,0.1)' }}>
@@ -242,6 +291,27 @@ export const DriverDashboard = () => {
                     </span>
                     <div style={{ color: 'var(--text-heading)', fontWeight: 600, fontSize: '1.05rem' }}>{assignedOrder.studentName}</div>
                     <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginTop: 4 }}>{assignedOrder.schoolName} ({assignedOrder.classDept})</div>
+                    <div style={{ display: 'flex', gap: 10, marginTop: 12, flexWrap: 'wrap' }}>
+                      <a
+                        href={assignedOrder.schoolMapsLink || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(assignedOrder.schoolName + ', Tamil Nadu')}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: 6,
+                          background: '#0D9488',
+                          color: '#FFF',
+                          padding: '8px 14px',
+                          borderRadius: 99,
+                          fontSize: '0.8rem',
+                          fontWeight: 700,
+                          textDecoration: 'none'
+                        }}
+                      >
+                        <Navigation size={13} /> Navigate to School Gate (Google Maps) ↗
+                      </a>
+                    </div>
                   </div>
                 </div>
 
@@ -311,12 +381,15 @@ export const DriverDashboard = () => {
                       </div>
 
                       <div style={{ fontSize: '0.88rem', color: 'var(--text-muted)', marginBottom: 20, display: 'flex', flexDirection: 'column', gap: 8 }}>
-                        <div><span style={{ color: 'var(--text-heading)', marginRight: 6 }}>📍 Pickup:</span> {ord.pickupAddress}</div>
-                        <div><span style={{ color: 'var(--text-heading)', marginRight: 6 }}>🏫 Drop:</span> {ord.schoolName} ({ord.distanceKm} km)</div>
-                        <div><span style={{ color: 'var(--text-heading)', marginRight: 6 }}>⏰ Target:</span> {ord.lunchTime}</div>
+                        <div style={{ background: 'rgba(249,115,22,0.06)', padding: '10px 12px', borderRadius: 10, border: '1px solid rgba(249,115,22,0.18)' }}>
+                          <span style={{ color: '#F97316', fontWeight: 800, display: 'block', fontSize: '0.78rem', textTransform: 'uppercase', marginBottom: 2 }}>📍 Detailed Pickup Location:</span>
+                          <span style={{ color: 'var(--text-heading)', fontWeight: 700, fontSize: '0.9rem', lineHeight: 1.4 }}>{ord.pickupAddress}</span>
+                        </div>
+                        <div><span style={{ color: 'var(--text-heading)', marginRight: 6 }}>🏫 Drop School:</span> <strong>{ord.schoolName}</strong> ({ord.distanceKm} km)</div>
+                        <div><span style={{ color: 'var(--text-heading)', marginRight: 6 }}>⏰ Target Bell:</span> {ord.lunchTime}</div>
                         <div>
-                          <span style={{ color: 'var(--text-heading)', marginRight: 6 }}>ðŸ’³ Type:</span> 
-                          <strong style={{ color: ord.paymentMode === 'emergency' ? '#F97316' : '#10B981' }}>{ord.paymentMode === 'emergency' ? 'Emergency (Escrow)' : 'Monthly Contract'}</strong>
+                          <span style={{ color: 'var(--text-heading)', marginRight: 6 }}>💳 Ride Type:</span> 
+                          <strong style={{ color: ord.paymentMode === 'emergency' ? '#F97316' : '#10B981' }}>{ord.paymentMode === 'emergency' ? '⚡ Emergency Solo Dispatch (Escrow)' : 'Monthly Contract'}</strong>
                         </div>
                       </div>
 
@@ -362,3 +435,5 @@ export const DriverDashboard = () => {
 
 
 
+
+export default DriverDashboard;

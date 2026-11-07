@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Polyline, Marker } from 'react-leaflet';
 import L from 'leaflet';
-import { Phone, CheckCircle, Navigation, Clock, ShieldCheck, MapPin, X } from 'lucide-react';
+import { Phone, CheckCircle, Navigation, Clock, ShieldCheck, MapPin, X, ExternalLink } from 'lucide-react';
 import { useAppState } from '../context/AppStateContext';
+import rider3dImg from '../assets/delivery_rider_3d.png';
+import { generateDynamicRoadCorridor } from '../utils/roadRouting';
 
 // Icons
 const homeIcon = L.divIcon({
@@ -19,19 +21,24 @@ const schoolIcon = L.divIcon({
 
 const getBikeIcon = (driverName) => L.divIcon({
   className: 'custom-icon',
-  html: `<div style="position: relative; display: flex; flex-direction: column; align-items: center; margin-top: -20px;">
-          <div style="width: 44px; height: 44px; border-radius: 50%; background: linear-gradient(135deg, #FF9F1C, #F97316); display: flex; align-items: center; justify-content: center; box-shadow: 0 0 24px rgba(255,159,28,0.9); font-size: 22px; z-index: 1000; border: 2px solid white;">🛵</div>
-          <div style="margin-top: 4px; background: rgba(10,18,36,0.92); backdrop-filter: blur(10px); border: 1px solid rgba(255,159,28,0.5); border-radius: 10px; padding: 3px 10px; color: #FF9F1C; font-size: 0.7rem; font-weight: 700; white-space: nowrap; box-shadow: 0 4px 16px rgba(0,0,0,0.5);">${driverName}</div>
+  html: `<div style="position: relative; display: flex; flex-direction: column; align-items: center; margin-top: -28px;">
+          <div style="position: absolute; top: 12px; width: 44px; height: 44px; border-radius: 50%; background: rgba(249,115,22,0.25); animation: ping 1.8s infinite;"></div>
+          <div style="width: 60px; height: 60px; filter: drop-shadow(0 6px 14px rgba(0,0,0,0.5)); display: flex; align-items: center; justify-content: center;">
+            <img src="${rider3dImg}" alt="Rider" style="width: 58px; height: 58px; object-fit: contain;" />
+          </div>
+          <div style="margin-top: -4px; background: rgba(11, 17, 32, 0.95); backdrop-filter: blur(8px); border: 1.5px solid #F97316; border-radius: 12px; padding: 2px 10px; color: #FFF; font-size: 0.68rem; font-weight: 800; white-space: nowrap; box-shadow: 0 4px 14px rgba(0,0,0,0.5);">${driverName || 'Ramesh Kumar'}</div>
          </div>`,
-  iconSize: [60, 60], iconAnchor: [30, 30],
+  iconSize: [70, 70], iconAnchor: [35, 35],
 });
 
 const ROUTES = {
   toHome: [
-    [13.0800, 80.2000], [13.0815, 80.2030], [13.0825, 80.2060], [13.0838, 80.2100],
+    [13.0760, 80.2000], [13.0782, 80.2045], [13.0805, 80.2078], [13.0825, 80.2090], [13.0838, 80.2100],
   ],
   toSchool: [
-    [13.0838, 80.2100], [13.0845, 80.2120], [13.0860, 80.2155], [13.0880, 80.2190], [13.0900, 80.2200],
+    [13.0838, 80.2100], [13.0834, 80.2125], [13.0825, 80.2162], [13.0812, 80.2210], 
+    [13.0798, 80.2265], [13.0782, 80.2320], [13.0765, 80.2378], [13.0740, 80.2435], 
+    [13.0705, 80.2480], [13.0645, 80.2510], [13.0580, 80.2528], [13.0538, 80.2536], [13.0524, 80.2542]
   ]
 };
 
@@ -48,8 +55,13 @@ export const DriverActiveRide = ({ order, onBack }) => {
   const isHeadingToSchool = ['Picked Up', 'On The Way'].includes(order.status);
   const isAtSchool = order.status === 'Arrived at School';
 
-  const routeKey = (isHeadingToPickup || isAtPickup) ? 'toHome' : 'toSchool';
-  const currentRoute = ROUTES[routeKey];
+  const homeCoords = order.homeCoordinates ? [order.homeCoordinates.lat, order.homeCoordinates.lng] : [13.0838, 80.2100];
+  const schoolCoords = order.schoolCoordinates ? [order.schoolCoordinates.lat, order.schoolCoordinates.lng] : [13.0524, 80.2542];
+  const dynamicCorridor = generateDynamicRoadCorridor(homeCoords[0], homeCoords[1], schoolCoords[0], schoolCoords[1]).coords;
+
+  const currentRoute = (isHeadingToPickup || isAtPickup)
+    ? [[homeCoords[0] - 0.006, homeCoords[1] - 0.006], [homeCoords[0] - 0.003, homeCoords[1] - 0.002], homeCoords]
+    : dynamicCorridor;
   const mapBounds = L.latLngBounds(currentRoute);
 
   useEffect(() => {
@@ -133,14 +145,14 @@ export const DriverActiveRide = ({ order, onBack }) => {
       fontFamily: 'var(--font-ui)'
     }}>
       <div style={{ position: 'relative', height: '100%' }}>
-        {darkMode && (
-          <style>
-            {".leaflet-tile-pane { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); }"}
-          </style>
-        )}
-        <MapContainer bounds={mapBounds} boundsOptions={{ padding: [80, 80] }} zoomControl={false} style={{ width: '100%', height: '100%', background: darkMode ? '#111' : '#f8f9fa' }}>
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          <Polyline positions={currentRoute} color="#F97316" weight={6} opacity={0.8} />
+        <MapContainer bounds={mapBounds} boundsOptions={{ padding: [80, 80] }} zoomControl={false} style={{ width: '100%', height: '100%', background: darkMode ? '#070B14' : '#f8f9fa' }}>
+          <TileLayer 
+            url={darkMode 
+              ? "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+              : "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            }
+          />
+          <Polyline positions={currentRoute} color="#F97316" weight={6} opacity={0.85} />
           
           <Marker position={currentRoute[currentRoute.length - 1]} icon={(isHeadingToPickup || isAtPickup) ? homeIcon : schoolIcon} />
           <Marker position={driverPosition} icon={getBikeIcon(order.driverName)} />
@@ -182,8 +194,28 @@ export const DriverActiveRide = ({ order, onBack }) => {
                   {(isHeadingToPickup || isAtPickup) ? 'PICKUP ADDRESS' : 'DROP ADDRESS'}
                 </div>
                 <div style={{ color: 'var(--text-heading)', fontWeight: 700, fontSize: '1.05rem', marginTop: 4 }}>
-                  {(isHeadingToPickup || isAtPickup) ? order.pickupAddress : order.deliveryAddress}
+                  {(isHeadingToPickup || isAtPickup) ? order.pickupAddress : (order.deliveryAddress || `${order.schoolName} (${order.classDept || ''})`)}
                 </div>
+                {(isHeadingToSchool || isAtSchool) && (
+                  <div style={{ marginTop: 6 }}>
+                    <a
+                      href={order.schoolMapsLink || `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent((order.schoolName || 'School') + ', Tamil Nadu')}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        fontSize: '0.78rem',
+                        color: '#0D9488',
+                        fontWeight: 700,
+                        textDecoration: 'none'
+                      }}
+                    >
+                      <ExternalLink size={12} /> Open School Navigation in Google Maps ↗
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
             

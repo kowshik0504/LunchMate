@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
 import { useAppState } from '../context/AppStateContext';
-import { Globe, Bot, MapPin, UtensilsCrossed, Star, HelpCircle, Home, User, LogOut, Sun, Moon, Calendar, CreditCard, Wallet, History, Users, Settings, FileText, Bike, ShieldCheck, BarChart3 } from 'lucide-react';
+import { Globe, Bot, MapPin, UtensilsCrossed, Star, HelpCircle, Home, User, LogOut, Sun, Moon, Calendar, CreditCard, Wallet, History, Users, Settings, FileText, Bike, ShieldCheck, BarChart3, Sparkles, Sliders, Zap } from 'lucide-react';
 import logoIcon from '../assets/logo_icon.jpg';
+import { WhyLunchMateModal } from './WhyLunchMateModal';
 
 export const Navbar = ({ onOpenAIChat }) => {
   
-  const { darkMode, toggleDarkMode, activeRole, setActiveRole, openLogin, logout } = useAppState();
+  const { darkMode, toggleDarkMode, activeRole, setActiveRole, openLogin, logout, showWhyModal, openWhyModal, closeWhyModal } = useAppState();
 
   const [scrolled, setScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState('home');
@@ -17,13 +18,12 @@ export const Navbar = ({ onOpenAIChat }) => {
       setScrolled(window.scrollY > 20);
 
       if (activeRole === 'landing') {
-        const sections = ['home', 'track', 'menu', 'testimonials', 'faq'];
+        const sections = ['home', 'workflow', 'features', 'pricing', 'start'];
         let current = 'home';
         for (const section of sections) {
           const el = document.getElementById(section);
           if (el) {
             const rect = el.getBoundingClientRect();
-            // If the section's top has passed the middle of the viewport
             if (rect.top <= window.innerHeight / 3) {
               current = section;
             }
@@ -37,21 +37,48 @@ export const Navbar = ({ onOpenAIChat }) => {
     return () => window.removeEventListener('scroll', onScroll);
   }, [activeRole]);
 
+  // Synchronize Navbar active link with hash in Parent/Driver/Admin roles
+  useEffect(() => {
+    const syncActiveHash = () => {
+      if (activeRole === 'parent') {
+        const rawHash = window.location.hash ? window.location.hash.replace('#', '') : '';
+        const validParentTabs = ['orders', 'emergency', 'subscription', 'reports', 'parent-details'];
+        const currentHash = validParentTabs.includes(rawHash) ? rawHash : 'orders';
+        setActiveLink(currentHash);
+      } else if (activeRole === 'driver') {
+        const rawHash = window.location.hash ? window.location.hash.replace('#', '') : '';
+        const validDriverTabs = ['home', 'earnings', 'history'];
+        const currentHash = validDriverTabs.includes(rawHash) ? rawHash : 'home';
+        setActiveLink(currentHash);
+      } else if (activeRole === 'admin') {
+        const rawHash = window.location.hash ? window.location.hash.replace('#', '') : '';
+        const validAdminTabs = ['verification', 'orders', 'support', 'finances'];
+        const currentHash = validAdminTabs.includes(rawHash) ? rawHash : 'verification';
+        setActiveLink(currentHash);
+      }
+    };
+
+    syncActiveHash();
+    window.addEventListener('hashchange', syncActiveHash);
+    return () => window.removeEventListener('hashchange', syncActiveHash);
+  }, [activeRole]);
+
   let navLinks = [];
   if (activeRole === 'landing') {
     navLinks = [
-      { id: 'home',        icon: <Home size={15} />,            label: 'Home' },
-      { id: 'track',       icon: <MapPin size={15} />,          label: 'Track My Order' },
-      { id: 'menu',        icon: <UtensilsCrossed size={15} />, label: 'Menu Today' },
-      { id: 'testimonials',icon: <Star size={15} />,            label: 'Testimonials' },
-      { id: 'faq',         icon: <HelpCircle size={15} />,      label: 'FAQs' },
+      { id: 'home',       icon: <Home size={15} />,        label: 'Home' },
+      { id: 'workflow',   icon: <Sliders size={15} />,     label: 'Simple Workflow' },
+      { id: 'features',   icon: <ShieldCheck size={15} />, label: 'Platform Features' },
+      { id: 'pricing',    icon: <CreditCard size={15} />,  label: 'Subscription Plans' },
+      { id: 'start',      icon: <Sparkles size={15} />,    label: 'Start Today' },
     ];
   } else if (activeRole === 'parent') {
     navLinks = [
-      { id: 'orders',       icon: <Home size={15} />,            label: 'Dashboard' },
-      { id: 'emergency',    icon: <MapPin size={15} />,          label: 'Emergency Delivery' },
-      { id: 'subscription', icon: <CreditCard size={15} />,      label: 'Subscription' },
-      { id: 'reports',      icon: <FileText size={15} />,        label: 'History' },
+      { id: 'orders',         icon: <Home size={15} />,       label: 'Dashboard' },
+      { id: 'emergency',      icon: <MapPin size={15} />,     label: 'Emergency Delivery' },
+      { id: 'subscription',   icon: <CreditCard size={15} />, label: 'Subscription' },
+      { id: 'reports',        icon: <FileText size={15} />,   label: 'History' },
+      { id: 'parent-details', icon: <User size={15} />,       label: 'Parent Details' },
     ];
   } else if (activeRole === 'driver') {
     navLinks = [
@@ -75,10 +102,13 @@ export const Navbar = ({ onOpenAIChat }) => {
       if (el) el.scrollIntoView({ behavior: 'smooth' });
     } else {
       window.location.hash = id;
+      window.dispatchEvent(new Event('hashchange'));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   return (
+    <>
     <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9000, padding: 0 }}>
       <div style={{
         margin: scrolled ? '8px 16px' : '14px 24px',
@@ -104,7 +134,7 @@ export const Navbar = ({ onOpenAIChat }) => {
 
         {/* ── Brand / Logo ── */}
         <div
-          onClick={() => { setActiveRole('landing'); setActiveLink('home'); }}
+          onClick={() => { window.location.hash = ''; setActiveRole('landing'); setActiveLink('home'); }}
           style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', flexShrink: 0 }}
         >
           {/* Crisp icon emblem */}
@@ -176,10 +206,30 @@ export const Navbar = ({ onOpenAIChat }) => {
           })}
         </nav>
 
-        {/* ── Right side: Language + AI Help ── */}
+        {/* ── Right side: Why LunchMate + Sign In + AI Help ── */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
 
-
+          {/* Why LunchMate? Modal Trigger */}
+          <button
+            type="button"
+            onClick={openWhyModal}
+            style={{
+              background: darkMode ? 'rgba(249,115,22,0.12)' : 'rgba(249,115,22,0.08)',
+              border: darkMode ? '1.5px solid rgba(249,115,22,0.35)' : '1.5px solid rgba(249,115,22,0.3)',
+              color: '#F97316',
+              padding: '9px 14px', borderRadius: 14,
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: '0.84rem', fontWeight: 800,
+              cursor: 'pointer',
+              display: 'flex', alignItems: 'center', gap: 6,
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(249,115,22,0.2)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = darkMode ? 'rgba(249,115,22,0.12)' : 'rgba(249,115,22,0.08)'; }}
+            title="Learn Why Parents & Schools Trust LunchMate"
+          >
+            <Sparkles size={14} color="#F97316" /> Why LunchMate?
+          </button>
 
           {/* Portal Switcher / Sign In */}
           {activeRole === 'landing' ? (
@@ -204,17 +254,78 @@ export const Navbar = ({ onOpenAIChat }) => {
             </button>
           ) : (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{
-                background: activeRole === 'parent' ? 'rgba(249,115,22,0.12)' : activeRole === 'driver' ? 'rgba(13,148,136,0.12)' : 'rgba(217,119,6,0.12)',
+              <div style={{
+                background: activeRole === 'parent' 
+                  ? (darkMode ? 'linear-gradient(135deg, rgba(249,115,22,0.18) 0%, rgba(234,88,12,0.10) 100%)' : 'linear-gradient(135deg, #FFF7ED 0%, #FFFFFF 100%)')
+                  : activeRole === 'driver' 
+                    ? (darkMode ? 'linear-gradient(135deg, rgba(13,148,136,0.18) 0%, rgba(15,118,110,0.10) 100%)' : 'linear-gradient(135deg, #F0FDFA 0%, #FFFFFF 100%)')
+                    : (darkMode ? 'linear-gradient(135deg, rgba(217,119,6,0.18) 0%, rgba(180,83,9,0.10) 100%)' : 'linear-gradient(135deg, #FEF3C7 0%, #FFFFFF 100%)'),
                 color: activeRole === 'parent' ? '#F97316' : activeRole === 'driver' ? '#0D9488' : '#D97706',
-                border: `1px solid ${activeRole === 'parent' ? 'rgba(249,115,22,0.3)' : activeRole === 'driver' ? 'rgba(13,148,136,0.3)' : 'rgba(217,119,6,0.3)'}`,
-                padding: '7px 14px', borderRadius: 12, fontSize: '0.82rem', fontWeight: 700,
-                fontFamily: "'DM Sans', sans-serif", display: 'flex', alignItems: 'center', gap: 6
+                border: activeRole === 'parent' 
+                  ? '1.5px solid rgba(249,115,22,0.45)' 
+                  : activeRole === 'driver' 
+                    ? '1.5px solid rgba(13,148,136,0.45)' 
+                    : '1.5px solid rgba(217,119,6,0.45)',
+                padding: '6px 14px',
+                borderRadius: 16,
+                fontSize: '0.82rem',
+                fontWeight: 800,
+                fontFamily: "'DM Sans', sans-serif",
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                boxShadow: darkMode 
+                  ? '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.15)' 
+                  : '0 4px 14px rgba(0,0,0,0.06), inset 0 1px 1px #FFFFFF',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
               }}>
-                {activeRole === 'parent' && '👤 Parent Portal'}
-                {activeRole === 'driver' && '🛵 Driver Portal'}
-                {activeRole === 'admin' && '🛡️ Admin Panel'}
-              </span>
+                {activeRole === 'parent' && (
+                  <>
+                    <div style={{
+                      width: 22, height: 22, borderRadius: 8,
+                      background: 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#FFFFFF', boxShadow: '0 2px 8px rgba(249,115,22,0.45)',
+                      flexShrink: 0
+                    }}>
+                      <User size={12} strokeWidth={2.8} />
+                    </div>
+                    <span style={{ letterSpacing: '0.02em', fontWeight: 800 }}>Parent Portal</span>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px #10B981', display: 'inline-block' }} />
+                  </>
+                )}
+                {activeRole === 'driver' && (
+                  <>
+                    <div style={{
+                      width: 22, height: 22, borderRadius: 8,
+                      background: 'linear-gradient(135deg, #0D9488 0%, #0F766E 100%)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#FFFFFF', boxShadow: '0 2px 8px rgba(13,148,136,0.45)',
+                      flexShrink: 0
+                    }}>
+                      <Bike size={13} strokeWidth={2.6} />
+                    </div>
+                    <span style={{ letterSpacing: '0.02em', fontWeight: 800 }}>Driver Portal</span>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px #10B981', display: 'inline-block' }} />
+                  </>
+                )}
+                {activeRole === 'admin' && (
+                  <>
+                    <div style={{
+                      width: 22, height: 22, borderRadius: 8,
+                      background: 'linear-gradient(135deg, #D97706 0%, #B45309 100%)',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      color: '#FFFFFF', boxShadow: '0 2px 8px rgba(217,119,6,0.45)',
+                      flexShrink: 0
+                    }}>
+                      <ShieldCheck size={13} strokeWidth={2.6} />
+                    </div>
+                    <span style={{ letterSpacing: '0.02em', fontWeight: 800 }}>Admin Master</span>
+                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px #10B981', display: 'inline-block' }} />
+                  </>
+                )}
+              </div>
               <button
                 onClick={logout}
                 style={{
@@ -290,5 +401,17 @@ export const Navbar = ({ onOpenAIChat }) => {
         </div>
       </div>
     </header>
+    <WhyLunchMateModal
+      isOpen={showWhyModal}
+      onClose={closeWhyModal}
+      onExplorePlans={() => {
+        if (activeRole === 'landing') {
+          openLogin('parent');
+        } else {
+          window.location.hash = 'subscription';
+        }
+      }}
+    />
+    </>
   );
 };
