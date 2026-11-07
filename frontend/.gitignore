@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Production Build
+dist/
+build/
+
+# Environment and Secrets
+.env
+.env.*
+*.env
+*.env.*
+!.env.example
+*.pem
+*.key
+
+# Logs & System
+*.log
+.DS_Store
+Thumbs.db

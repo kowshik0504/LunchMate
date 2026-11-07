@@ -1,0 +1,64 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String       @id
+  role          Role
+  name          String
+  phone         String
+  password_hash String?
+  created_at    DateTime     @default(now())
+
+  driverDetails DriverDetails?
+  ordersAsParent Order[]       @relation("ParentOrders")
+  ordersAsDriver Order[]       @relation("DriverOrders")
+  transactions  Transaction[]
+}
+
+model DriverDetails {
+  driver_id       String @id
+  vehicle_model   String?
+  license_number  String?
+  approval_status String @default("PENDING")
+  
+  aadhaar_file_path String?
+  pan_file_path     String?
+
+  user User @relation(fields: [driver_id], references: [id])
+}
+
+model Order {
+  order_id     String   @id
+  parent_id    String
+  driver_id    String?
+  status       String
+  total_amount Float
+  otp_code     String?
+  created_at   DateTime @default(now())
+
+  parent User  @relation("ParentOrders", fields: [parent_id], references: [id])
+  driver User? @relation("DriverOrders", fields: [driver_id], references: [id])
+}
+
+model Transaction {
+  transaction_id String   @id
+  user_id        String
+  type           String   // 'PAYMENT_IN', 'PAYOUT'
+  amount         Float
+  status         String
+  timestamp      DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [id])
+}
+
+enum Role {
+  PARENT
+  DRIVER
+  ADMIN
+}
