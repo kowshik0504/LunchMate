@@ -1,0 +1,17 @@
+name: Keep Render Backend Alive
+
+on:
+  schedule:
+    # Runs every 14 minutes to prevent Render free tier from sleeping
+    - cron: '*/14 * * * *'
+  workflow_dispatch: # Allows manual ping from the GitHub Actions tab
+
+jobs:
+  ping-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping LunchMate Backend Health Endpoint
+        run: |
+          URL="${{ secrets.RENDER_BACKEND_URL || 'https://lunchmate-backend.onrender.com' }}"
+          echo "Pinging health endpoint at $URL/api/health"
+          curl -s -o /dev/null -w "Response code: %{http_code}\n" "$URL/api/health" || echo "Ping attempted."
