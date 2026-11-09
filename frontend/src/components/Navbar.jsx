@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-
 import { useAppState } from '../context/AppStateContext';
-import { Globe, Bot, MapPin, UtensilsCrossed, Star, HelpCircle, Home, User, LogOut, Sun, Moon, Calendar, CreditCard, Wallet, History, Users, Settings, FileText, Bike, ShieldCheck, BarChart3, Sparkles, Sliders, Zap } from 'lucide-react';
+import { 
+  Bot, MapPin, Home, User, LogOut, Sun, Moon, 
+  CreditCard, Wallet, History, FileText, Bike, 
+  ShieldCheck, BarChart3, Sparkles, Sliders, Menu, X 
+} from 'lucide-react';
 import logoIcon from '../assets/logo_icon.jpg';
 import { WhyLunchMateModal } from './WhyLunchMateModal';
 
 export const Navbar = ({ onOpenAIChat }) => {
-  
   const { darkMode, toggleDarkMode, activeRole, setActiveRole, openLogin, logout, showWhyModal, openWhyModal, closeWhyModal } = useAppState();
 
   const [scrolled, setScrolled] = useState(false);
   const [activeLink, setActiveLink] = useState('home');
-  const [showLangMenu, setShowLangMenu] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const onScroll = () => {
@@ -66,37 +68,38 @@ export const Navbar = ({ onOpenAIChat }) => {
   let navLinks = [];
   if (activeRole === 'landing') {
     navLinks = [
-      { id: 'home',       icon: <Home size={15} />,        label: 'Home' },
-      { id: 'workflow',   icon: <Sliders size={15} />,     label: 'Simple Workflow' },
-      { id: 'features',   icon: <ShieldCheck size={15} />, label: 'Platform Features' },
-      { id: 'pricing',    icon: <CreditCard size={15} />,  label: 'Subscription Plans' },
-      { id: 'start',      icon: <Sparkles size={15} />,    label: 'Start Today' },
+      { id: 'home',       icon: <Home size={15} />,        label: 'Home',               shortLabel: 'Home' },
+      { id: 'workflow',   icon: <Sliders size={15} />,     label: 'Simple Workflow',    shortLabel: 'Workflow' },
+      { id: 'features',   icon: <ShieldCheck size={15} />, label: 'Platform Features',  shortLabel: 'Features' },
+      { id: 'pricing',    icon: <CreditCard size={15} />,  label: 'Subscription Plans', shortLabel: 'Plans' },
+      { id: 'start',      icon: <Sparkles size={15} />,    label: 'Start Today',        shortLabel: 'Start' },
     ];
   } else if (activeRole === 'parent') {
     navLinks = [
-      { id: 'orders',         icon: <Home size={15} />,       label: 'Dashboard' },
-      { id: 'emergency',      icon: <MapPin size={15} />,     label: 'Emergency Delivery' },
-      { id: 'subscription',   icon: <CreditCard size={15} />, label: 'Subscription' },
-      { id: 'reports',        icon: <FileText size={15} />,   label: 'History' },
-      { id: 'parent-details', icon: <User size={15} />,       label: 'Parent Details' },
+      { id: 'orders',         icon: <Home size={15} />,       label: 'Dashboard',          shortLabel: 'Home' },
+      { id: 'emergency',      icon: <MapPin size={15} />,     label: 'Emergency Delivery', shortLabel: 'Emergency' },
+      { id: 'subscription',   icon: <CreditCard size={15} />, label: 'Subscription',      shortLabel: 'Plans' },
+      { id: 'reports',        icon: <FileText size={15} />,   label: 'History',           shortLabel: 'History' },
+      { id: 'parent-details', icon: <User size={15} />,       label: 'Parent Details',     shortLabel: 'Profile' },
     ];
   } else if (activeRole === 'driver') {
     navLinks = [
-      { id: 'home',        icon: <Home size={15} />,            label: 'Route Dashboard' },
-      { id: 'earnings',    icon: <Wallet size={15} />,          label: 'Earnings' },
-      { id: 'history',     icon: <History size={15} />,         label: 'History' },
+      { id: 'home',        icon: <Home size={15} />,            label: 'Route Dashboard', shortLabel: 'Routes' },
+      { id: 'earnings',    icon: <Wallet size={15} />,          label: 'Earnings',        shortLabel: 'Earnings' },
+      { id: 'history',     icon: <History size={15} />,         label: 'History',         shortLabel: 'History' },
     ];
   } else if (activeRole === 'admin') {
     navLinks = [
-      { id: 'verification', icon: <ShieldCheck size={15} />,     label: 'Verification' },
-      { id: 'orders',       icon: <Bike size={15} />,            label: 'Live Tracking' },
-      { id: 'support',      icon: <Bot size={15} />,             label: 'Support Center' },
-      { id: 'finances',     icon: <BarChart3 size={15} />,       label: 'Finances' },
+      { id: 'verification', icon: <ShieldCheck size={15} />,     label: 'Verification',   shortLabel: 'Verify' },
+      { id: 'orders',       icon: <Bike size={15} />,            label: 'Live Tracking',  shortLabel: 'Live' },
+      { id: 'support',      icon: <Bot size={15} />,             label: 'Support Center', shortLabel: 'Support' },
+      { id: 'finances',     icon: <BarChart3 size={15} />,       label: 'Finances',       shortLabel: 'Finances' },
     ];
   }
 
   const handleNav = (id) => {
     setActiveLink(id);
+    setMobileMenuOpen(false);
     if (activeRole === 'landing') {
       const el = document.getElementById(id);
       if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -109,83 +112,58 @@ export const Navbar = ({ onOpenAIChat }) => {
 
   return (
     <>
-    <header style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9000, padding: 0 }}>
-      <div style={{
-        margin: scrolled ? '8px 16px' : '14px 24px',
-        background: darkMode
-          ? 'rgba(12, 15, 26, 0.65)'
-          : 'rgba(255, 255, 255, 0.75)',
-        backdropFilter: 'blur(32px) saturate(200%)',
-        WebkitBackdropFilter: 'blur(32px) saturate(200%)',
-        border: darkMode
-          ? '1px solid rgba(255, 255, 255, 0.12)'
-          : '1.5px solid rgba(255, 255, 255, 0.85)',
-        borderRadius: 24,
-        padding: '0 24px',
-        height: scrolled ? 62 : 72,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        boxShadow: darkMode
-          ? '0 16px 40px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.1)'
-          : scrolled ? '0 16px 40px rgba(0,0,0,0.08), inset 0 1px 2px rgba(255,255,255,0.9)' : '0 8px 24px rgba(0,0,0,0.04), inset 0 1px 1px rgba(255,255,255,0.8)',
-        transition: 'all 0.35s cubic-bezier(0.16,1,0.3,1)',
-      }}>
+    <header className="lm-header">
+      <div 
+        className={`lm-nav-pill ${scrolled ? 'scrolled' : ''}`}
+        style={{
+          background: darkMode
+            ? 'rgba(12, 15, 26, 0.72)'
+            : 'rgba(255, 255, 255, 0.82)',
+          border: darkMode
+            ? '1px solid rgba(255, 255, 255, 0.12)'
+            : '1.5px solid rgba(255, 255, 255, 0.88)',
+          boxShadow: darkMode
+            ? '0 16px 40px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.1)'
+            : scrolled 
+              ? '0 16px 40px rgba(0,0,0,0.08), inset 0 1px 2px rgba(255,255,255,0.9)' 
+              : '0 8px 24px rgba(0,0,0,0.04), inset 0 1px 1px rgba(255,255,255,0.8)',
+        }}
+      >
 
         {/* ── Brand / Logo ── */}
         <div
+          className="lm-nav-brand"
           onClick={() => { window.location.hash = ''; setActiveRole('landing'); setActiveLink('home'); }}
-          style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', flexShrink: 0 }}
         >
-          {/* Crisp icon emblem */}
-          <div style={{
-            width: 48, height: 48, borderRadius: 14,
-            overflow: 'hidden',
-            background: '#ffffff',
-            padding: 3,
-            boxShadow: '0 6px 20px rgba(249,115,22,0.28), 0 2px 6px rgba(0,0,0,0.08)',
-            border: '2px solid rgba(249,115,22,0.35)',
-            flexShrink: 0,
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            transition: 'transform 0.2s ease',
-          }}>
+          <div className="lm-nav-logo-box">
             <img
               src={logoIcon}
               alt="LunchMate Icon"
-              style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 10 }}
+              style={{ width: '100%', height: '100%', objectFit: 'contain', borderRadius: 8 }}
             />
           </div>
-          <span style={{
-            fontFamily: "'Playfair Display', serif",
-            fontSize: '1.4rem', fontWeight: 800,
-            color: darkMode ? '#F0EBE3' : '#1A120B', letterSpacing: '-0.02em',
-            lineHeight: 1,
-          }}>
+          <span 
+            className="lm-nav-title"
+            style={{ color: darkMode ? '#F0EBE3' : '#1A120B' }}
+          >
             Lunch<span style={{ color: '#F97316' }}>Mate</span>
           </span>
         </div>
 
-        {/* ── Nav Links ── */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        {/* ── Nav Links (Fluid & Zoom Adaptive) ── */}
+        <nav className="lm-nav-links">
           {navLinks.map(link => {
             const isActive = activeLink === link.id;
             return (
               <button
                 key={link.id}
                 onClick={() => handleNav(link.id)}
+                className="lm-nav-btn"
                 style={{
-                  background: isActive ? (darkMode ? 'rgba(249,115,22,0.15)' : 'rgba(249,115,22,0.12)') : 'transparent',
-                  border: isActive ? `1px solid ${darkMode ? 'rgba(249,115,22,0.4)' : 'rgba(249,115,22,0.35)'}` : '1px solid transparent',
-                  color: isActive ? '#F97316' : (darkMode ? 'rgba(255,255,255,0.75)' : 'rgba(26,18,11,0.7)'),
+                  background: isActive ? (darkMode ? 'rgba(249,115,22,0.18)' : 'rgba(249,115,22,0.12)') : 'transparent',
+                  border: isActive ? `1px solid ${darkMode ? 'rgba(249,115,22,0.45)' : 'rgba(249,115,22,0.35)'}` : '1px solid transparent',
+                  color: isActive ? '#F97316' : (darkMode ? 'rgba(255,255,255,0.8)' : 'rgba(26,18,11,0.72)'),
                   boxShadow: isActive ? (darkMode ? '0 4px 12px rgba(249,115,22,0.2)' : '0 4px 12px rgba(249,115,22,0.12)') : 'none',
-                  padding: '9px 16px',
-                  borderRadius: 14,
-                  fontFamily: "'DM Sans', sans-serif",
-                  fontSize: '0.88rem', fontWeight: 600,
-                  cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', gap: 7,
-                  transition: 'all 0.2s ease',
-                  whiteSpace: 'nowrap',
                 }}
                 onMouseEnter={e => {
                   if (!isActive) {
@@ -200,60 +178,57 @@ export const Navbar = ({ onOpenAIChat }) => {
                   }
                 }}
               >
-                {link.icon} {link.label}
+                {link.icon} 
+                <span className="lm-nav-full-label">{link.label}</span>
+                <span className="lm-nav-short-label">{link.shortLabel}</span>
               </button>
             );
           })}
         </nav>
 
-        {/* ── Right side: Why LunchMate + Sign In + AI Help ── */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
+        {/* ── Right side Actions ── */}
+        <div className="lm-nav-right">
 
           {/* Why LunchMate? Modal Trigger */}
-          <button
-            type="button"
-            onClick={openWhyModal}
-            style={{
-              background: darkMode ? 'rgba(249,115,22,0.12)' : 'rgba(249,115,22,0.08)',
-              border: darkMode ? '1.5px solid rgba(249,115,22,0.35)' : '1.5px solid rgba(249,115,22,0.3)',
-              color: '#F97316',
-              padding: '9px 14px', borderRadius: 14,
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: '0.84rem', fontWeight: 800,
-              cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: 6,
-              transition: 'all 0.2s ease',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(249,115,22,0.2)'; }}
-            onMouseLeave={e => { e.currentTarget.style.background = darkMode ? 'rgba(249,115,22,0.12)' : 'rgba(249,115,22,0.08)'; }}
-            title="Learn Why Parents & Schools Trust LunchMate"
-          >
-            <Sparkles size={14} color="#F97316" /> Why LunchMate?
-          </button>
+          <div className="lm-why-btn-container">
+            <button
+              type="button"
+              onClick={openWhyModal}
+              className="lm-nav-action-btn"
+              style={{
+                background: darkMode ? 'rgba(249,115,22,0.14)' : 'rgba(249,115,22,0.08)',
+                border: darkMode ? '1.5px solid rgba(249,115,22,0.35)' : '1.5px solid rgba(249,115,22,0.3)',
+                color: '#F97316',
+                fontWeight: 800,
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(249,115,22,0.22)'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = darkMode ? 'rgba(249,115,22,0.14)' : 'rgba(249,115,22,0.08)'; }}
+              title="Learn Why Parents & Schools Trust LunchMate"
+            >
+              <Sparkles size={14} color="#F97316" />
+              <span className="lm-why-full">Why LunchMate?</span>
+              <span className="lm-why-short">Why?</span>
+            </button>
+          </div>
 
           {/* Portal Switcher / Sign In */}
           {activeRole === 'landing' ? (
             <button
               onClick={() => openLogin('parent')}
+              className="lm-nav-action-btn"
               style={{
-                background: darkMode ? 'rgba(249,115,22,0.15)' : 'rgba(249,115,22,0.12)',
-                border: darkMode ? '1.5px solid rgba(249,115,22,0.35)' : '1.5px solid rgba(249,115,22,0.3)',
-                boxShadow: darkMode ? '0 4px 12px rgba(249,115,22,0.15)' : '0 4px 12px rgba(249,115,22,0.1), inset 0 1px 1px rgba(255,255,255,0.7)',
+                background: darkMode ? 'rgba(249,115,22,0.18)' : 'rgba(249,115,22,0.12)',
+                border: darkMode ? '1.5px solid rgba(249,115,22,0.38)' : '1.5px solid rgba(249,115,22,0.3)',
+                boxShadow: darkMode ? '0 4px 12px rgba(249,115,22,0.18)' : '0 4px 12px rgba(249,115,22,0.1), inset 0 1px 1px rgba(255,255,255,0.7)',
                 color: '#F97316',
-                padding: '9px 18px', borderRadius: 14,
-                fontFamily: "'DM Sans', sans-serif",
-                fontSize: '0.88rem', fontWeight: 700,
-                cursor: 'pointer',
-                display: 'flex', alignItems: 'center', gap: 6,
-                transition: 'all 0.2s ease',
               }}
               onMouseEnter={e => { e.currentTarget.style.background = '#F97316'; e.currentTarget.style.color = '#fff'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(249,115,22,0.1)'; e.currentTarget.style.color = '#F97316'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(249,115,22,0.12)'; e.currentTarget.style.color = '#F97316'; }}
             >
-              <User size={15} /> Sign In
+              <User size={14} /> Sign In
             </button>
           ) : (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
               <div style={{
                 background: activeRole === 'parent' 
                   ? (darkMode ? 'linear-gradient(135deg, rgba(249,115,22,0.18) 0%, rgba(234,88,12,0.10) 100%)' : 'linear-gradient(135deg, #FFF7ED 0%, #FFFFFF 100%)')
@@ -266,63 +241,61 @@ export const Navbar = ({ onOpenAIChat }) => {
                   : activeRole === 'driver' 
                     ? '1.5px solid rgba(13,148,136,0.45)' 
                     : '1.5px solid rgba(217,119,6,0.45)',
-                padding: '6px 14px',
-                borderRadius: 16,
-                fontSize: '0.82rem',
+                padding: '5px clamp(6px, 0.8vw, 12px)',
+                borderRadius: 14,
+                fontSize: '0.78rem',
                 fontWeight: 800,
                 fontFamily: "'DM Sans', sans-serif",
                 display: 'flex',
                 alignItems: 'center',
-                gap: 8,
+                gap: 6,
                 boxShadow: darkMode 
                   ? '0 4px 16px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.15)' 
                   : '0 4px 14px rgba(0,0,0,0.06), inset 0 1px 1px #FFFFFF',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
               }}>
                 {activeRole === 'parent' && (
                   <>
                     <div style={{
-                      width: 22, height: 22, borderRadius: 8,
+                      width: 20, height: 20, borderRadius: 6,
                       background: 'linear-gradient(135deg, #F97316 0%, #EA580C 100%)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: '#FFFFFF', boxShadow: '0 2px 8px rgba(249,115,22,0.45)',
-                      flexShrink: 0
+                      color: '#FFFFFF', flexShrink: 0
                     }}>
-                      <User size={12} strokeWidth={2.8} />
+                      <User size={11} strokeWidth={2.8} />
                     </div>
-                    <span style={{ letterSpacing: '0.02em', fontWeight: 800 }}>Parent Portal</span>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px #10B981', display: 'inline-block' }} />
+                    <span className="lm-role-badge-full">Parent Portal</span>
+                    <span className="lm-role-badge-short">Parent</span>
+                    <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />
                   </>
                 )}
                 {activeRole === 'driver' && (
                   <>
                     <div style={{
-                      width: 22, height: 22, borderRadius: 8,
+                      width: 20, height: 20, borderRadius: 6,
                       background: 'linear-gradient(135deg, #0D9488 0%, #0F766E 100%)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: '#FFFFFF', boxShadow: '0 2px 8px rgba(13,148,136,0.45)',
-                      flexShrink: 0
+                      color: '#FFFFFF', flexShrink: 0
                     }}>
-                      <Bike size={13} strokeWidth={2.6} />
+                      <Bike size={11} strokeWidth={2.6} />
                     </div>
-                    <span style={{ letterSpacing: '0.02em', fontWeight: 800 }}>Driver Portal</span>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px #10B981', display: 'inline-block' }} />
+                    <span className="lm-role-badge-full">Driver Portal</span>
+                    <span className="lm-role-badge-short">Driver</span>
+                    <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />
                   </>
                 )}
                 {activeRole === 'admin' && (
                   <>
                     <div style={{
-                      width: 22, height: 22, borderRadius: 8,
+                      width: 20, height: 20, borderRadius: 6,
                       background: 'linear-gradient(135deg, #D97706 0%, #B45309 100%)',
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      color: '#FFFFFF', boxShadow: '0 2px 8px rgba(217,119,6,0.45)',
-                      flexShrink: 0
+                      color: '#FFFFFF', flexShrink: 0
                     }}>
-                      <ShieldCheck size={13} strokeWidth={2.6} />
+                      <ShieldCheck size={11} strokeWidth={2.6} />
                     </div>
-                    <span style={{ letterSpacing: '0.02em', fontWeight: 800 }}>Admin Master</span>
-                    <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', boxShadow: '0 0 8px #10B981', display: 'inline-block' }} />
+                    <span className="lm-role-badge-full">Admin Master</span>
+                    <span className="lm-role-badge-short">Admin</span>
+                    <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#10B981', display: 'inline-block' }} />
                   </>
                 )}
               </div>
@@ -332,16 +305,15 @@ export const Navbar = ({ onOpenAIChat }) => {
                   background: 'rgba(239,68,68,0.08)',
                   border: '1px solid rgba(239,68,68,0.25)',
                   color: '#EF4444',
-                  padding: '7px 14px', borderRadius: 12,
-                  fontSize: '0.82rem', fontWeight: 600,
-                  fontFamily: "'DM Sans', sans-serif",
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 5,
+                  padding: '5px 10px', borderRadius: 10,
+                  fontSize: '0.78rem', fontWeight: 600,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4,
                   transition: 'all 0.2s ease',
                 }}
                 onMouseEnter={e => { e.currentTarget.style.background = '#EF4444'; e.currentTarget.style.color = '#fff'; }}
                 onMouseLeave={e => { e.currentTarget.style.background = 'rgba(239,68,68,0.08)'; e.currentTarget.style.color = '#EF4444'; }}
               >
-                <LogOut size={13} /> Exit
+                <LogOut size={12} /> Exit
               </button>
             </div>
           )}
@@ -350,57 +322,85 @@ export const Navbar = ({ onOpenAIChat }) => {
           <button
             onClick={toggleDarkMode}
             title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            className="lm-nav-icon-btn"
             style={{
-              width: 42, height: 42,
-              borderRadius: 14,
               background: darkMode
                 ? 'rgba(249,115,22,0.15)'
                 : 'rgba(255, 255, 255, 0.65)',
               border: darkMode
                 ? '1.5px solid rgba(249,115,22,0.3)'
                 : '1.5px solid rgba(255, 255, 255, 0.9)',
-              boxShadow: darkMode ? '0 4px 12px rgba(249,115,22,0.15)' : '0 2px 8px rgba(0,0,0,0.04), inset 0 1px 2px rgba(255,255,255,0.9)',
               color: darkMode ? '#F97316' : '#0D9488',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.25s cubic-bezier(0.34,1.56,0.64,1)',
-              flexShrink: 0,
-            }}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'scale(1.12) rotate(15deg)';
-              e.currentTarget.style.background = darkMode ? 'rgba(249,115,22,0.22)' : 'rgba(13,148,136,0.16)';
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = 'scale(1) rotate(0deg)';
-              e.currentTarget.style.background = darkMode ? 'rgba(249,115,22,0.12)' : 'rgba(13,148,136,0.08)';
             }}
           >
-            {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+            {darkMode ? <Sun size={16} /> : <Moon size={16} />}
           </button>
 
           {/* AI Help button */}
           <button
             onClick={onOpenAIChat}
+            className="lm-nav-action-btn"
             style={{
               background: 'linear-gradient(135deg, #0D9488, #115E59)',
               border: '1px solid rgba(255,255,255,0.2)',
               color: 'white',
-              padding: '9px 20px', borderRadius: 14,
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: '0.88rem', fontWeight: 700,
-              cursor: 'pointer',
-              display: 'flex', alignItems: 'center', gap: 7,
-              boxShadow: '0 4px 14px rgba(13,148,136,0.35), inset 0 1px 1px rgba(255,255,255,0.3)',
-              transition: 'all 0.2s ease',
+              boxShadow: '0 4px 14px rgba(13,148,136,0.35)',
             }}
-            onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-1px)'; e.currentTarget.style.boxShadow = '0 6px 20px rgba(13,148,136,0.45)'; }}
-            onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(13,148,136,0.35)'; }}
           >
-            <Bot size={16} /> AI Help
+            <Bot size={15} /> AI Help
+          </button>
+
+          {/* Mobile hamburger toggle (shows only on narrow screens / high zoom) */}
+          <button
+            className="lm-hamburger-btn"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            style={{ color: darkMode ? '#FFFFFF' : '#1A120B' }}
+            title="Toggle Menu"
+          >
+            {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
         </div>
+
+        {/* Mobile Dropdown Drawer */}
+        {mobileMenuOpen && (
+          <div 
+            className="lm-mobile-drawer"
+            style={{
+              background: darkMode ? 'rgba(12, 15, 26, 0.96)' : 'rgba(255, 255, 255, 0.96)',
+              border: darkMode ? '1px solid rgba(255, 255, 255, 0.15)' : '1px solid rgba(0, 0, 0, 0.1)',
+            }}
+          >
+            {navLinks.map(link => {
+              const isActive = activeLink === link.id;
+              return (
+                <button
+                  key={link.id}
+                  onClick={() => handleNav(link.id)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '10px 14px',
+                    borderRadius: 12,
+                    border: 'none',
+                    background: isActive ? 'rgba(249,115,22,0.15)' : 'transparent',
+                    color: isActive ? '#F97316' : (darkMode ? '#F0EBE3' : '#1A120B'),
+                    fontWeight: isActive ? 700 : 500,
+                    fontSize: '0.9rem',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                  }}
+                >
+                  {link.icon} {link.label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+
       </div>
     </header>
+
     <WhyLunchMateModal
       isOpen={showWhyModal}
       onClose={closeWhyModal}

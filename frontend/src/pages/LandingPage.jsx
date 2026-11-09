@@ -199,7 +199,7 @@ export const LandingPage = () => {
   const tickerItems = [
     'Fresh Home-Cooked Only', 'Dual OTP Security', 'Live GPS Tracking',
     'Emergency Delivery', 'Monthly Subscriptions', '85% Driver Payout',
-    'English · Tamil · Hindi', 'AI Customer Support',
+    'Zero-Fee UPI Escrow', 'AI Customer Support',
   ];
 
   const steps = [
@@ -213,7 +213,7 @@ export const LandingPage = () => {
     { icon: <Key size={24} color="#F97316" />, bg: 'rgba(249,115,22,0.08)', border: 'rgba(249,115,22,0.18)', title: 'Double OTP Security', desc: 'Pickup OTP from Parent + Delivery OTP at school gate — two-factor handoff for total safety.' },
     { icon: <MapPin size={24} color="#0D9488" />, bg: 'rgba(13,148,136,0.08)', border: 'rgba(13,148,136,0.18)', title: 'Live GPS Tracking', desc: 'Real-time driver location, ETA countdown and every delivery milestone notification.' },
     { icon: <Zap size={24} color="#D97706" />, bg: 'rgba(217,119,6,0.08)', border: 'rgba(217,119,6,0.18)', title: 'Emergency Same-Day', desc: 'Parents stuck in meetings? One tap dispatches the nearest driver in under 2 minutes.' },
-    { icon: <Globe2 size={24} color="#7C3AED" />, bg: 'rgba(124,58,237,0.07)', border: 'rgba(124,58,237,0.16)', title: 'Multi-Language', desc: 'Platform in English, Tamil and Hindi. More regional languages coming with expansion.' },
+    { icon: <ShieldCheck size={24} color="#7C3AED" />, bg: 'rgba(124,58,237,0.07)', border: 'rgba(124,58,237,0.16)', title: 'Verified School Gates', desc: 'Pre-indexed Tamil Nadu campuses with strict security gate reception and double OTP handshake.' },
     { icon: <Bot size={24} color="#0D9488" />, bg: 'rgba(13,148,136,0.08)', border: 'rgba(13,148,136,0.18)', title: 'AI Customer Support', desc: '24/7 instant answers that automatically escalate to a human admin when needed.' },
     { icon: <BarChart3 size={24} color="#F97316" />, bg: 'rgba(249,115,22,0.08)', border: 'rgba(249,115,22,0.18)', title: 'Monthly Reports', desc: 'Full delivery history, success rates, and downloadable invoices every month.' },
   ];
