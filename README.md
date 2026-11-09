@@ -1,5 +1,7 @@
 # LunchMate 🍱 🚀
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-lunch--mate--opal.vercel.app-success?style=flat-square&logo=vercel&logoColor=white)](https://lunch-mate-opal.vercel.app)
+[![API Status](https://img.shields.io/badge/API%20Status-Live%20(Render)-blue?style=flat-square&logo=render&logoColor=white)](https://lunchmate-1hq9.onrender.com/api/health)
 [![React](https://img.shields.io/badge/React-18.x-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev/)
 [![Vite](https://img.shields.io/badge/Vite-5.x-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Node.js](https://img.shields.io/badge/Node.js-20.x-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
