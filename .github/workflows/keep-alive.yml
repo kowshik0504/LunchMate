@@ -12,6 +12,6 @@ jobs:
     steps:
       - name: Ping LunchMate Backend Health Endpoint
         run: |
-          URL="${{ secrets.RENDER_BACKEND_URL || 'https://lunchmate-backend.onrender.com' }}"
+          URL="${{ secrets.RENDER_BACKEND_URL || 'https://lunchmate-1hq9.onrender.com' }}"
           echo "Pinging health endpoint at $URL/api/health"
           curl -s -o /dev/null -w "Response code: %{http_code}\n" "$URL/api/health" || echo "Ping attempted."
