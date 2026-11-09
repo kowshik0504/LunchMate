@@ -87,7 +87,8 @@ export const PaymentEscrowModal = ({
 
     try {
       // 1. Call YouPI Pay-In Charge Creation (0% Platform Fee Gateway)
-      const res = await fetch('http://localhost:5000/api/payments/youpi/create-charge', {
+      const apiBase = (import.meta.env.VITE_API_URL || 'https://lunchmate-1hq9.onrender.com').replace(/\/$/, '');
+      const res = await fetch(`${apiBase}/api/payments/youpi/create-charge`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -106,7 +107,7 @@ export const PaymentEscrowModal = ({
 
       // 2. Call YouPI UTR Verification / Automatic Bank Notification Reconciliation
       const cleanUtr = utrInput.replace(/\D/g, '') || `${Date.now().toString().slice(-6)}${Math.floor(100000 + Math.random() * 900000)}`;
-      await fetch('http://localhost:5000/api/payments/youpi/verify-utr', {
+      await fetch(`${apiBase}/api/payments/youpi/verify-utr`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
