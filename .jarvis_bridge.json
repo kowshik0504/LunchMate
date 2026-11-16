@@ -1,0 +1,43 @@
+{
+  "project_name": "LunchMate",
+  "project_path": "C:\\Users\\acer\\Desktop\\LunchMate",
+  "live_frontend_url": "https://lunch-mate-opal.vercel.app",
+  "live_backend_url": "https://lunchmate-1hq9.onrender.com",
+  "health_endpoint": "https://lunchmate-1hq9.onrender.com/api/health",
+  "database": "Neon Serverless PostgreSQL (AWS Singapore)",
+  "active_coding_assistant": "Google Antigravity",
+  "last_synced": "2026-11-16T15:30:00+05:30",
+  "system_state": {
+    "git_branch": "main",
+    "last_commit": "457cccb",
+    "last_commit_message": "fix: Remove language ticker and make navbar zoom-adaptive and fluid across all screen sizes",
+    "build_status": "passing",
+    "deployment_status": "live"
+  },
+  "recent_assistant_work": [
+    {
+      "assistant": "Google Antigravity",
+      "timestamp": "2026-11-16T15:30:00+05:30",
+      "summary": "Created bidirectional JARVIS-LunchMate plugin and unified assistant cooperation bridge.",
+      "status": "completed"
+    },
+    {
+      "assistant": "Google Antigravity",
+      "timestamp": "2026-11-09T19:40:00+05:30",
+      "summary": "Made navigation bar zoom-adaptive across all screen resolutions and removed language ticker.",
+      "status": "completed"
+    },
+    {
+      "assistant": "Google Antigravity",
+      "timestamp": "2026-11-09T19:22:00+05:30",
+      "summary": "Live cloud production deployment: Vercel frontend, Render backend, Neon PostgreSQL database.",
+      "status": "completed"
+    }
+  ],
+  "pending_tasks": [],
+  "cooperation_rules": {
+    "orchestrator": "J.A.R.V.I.S. (Desktop Voice Command & Real-Time Monitor)",
+    "primary_engineer": "Google Antigravity (Deep Architecture, Multi-File Implementation, Build Verification & Git Push)",
+    "secondary_engineer": "JARVIS dev_agent (Localized desktop refactoring & quick fixes)"
+  }
+}
