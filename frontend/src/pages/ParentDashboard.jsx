@@ -1241,7 +1241,7 @@ export const ParentDashboard = () => {
             </h1>
 
             {/* 🌟 Ultra-Attractive Luxury Student Profile Glass Card */}
-            <div className="reveal reveal-delay-2" style={{
+            <div id="student-school-record-card" className="reveal reveal-delay-2" style={{
               maxWidth: 520,
               marginBottom: 24,
               background: darkMode
@@ -2962,7 +2962,7 @@ export const ParentDashboard = () => {
 
         {/* TAB 3: SUBSCRIPTION */}
         {activeTab === 'subscription' && (
-          <div>
+          <div id="subscription-plans-section">
             <div className="reveal-left" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 30 }}>
               <div>
                 <h3 style={{ fontSize: '1.6rem', fontFamily: 'var(--font-display)', color: 'var(--text-heading)' }}>Subscription Manager</h3>
@@ -3413,7 +3413,9 @@ export const ParentDashboard = () => {
 
         {/* TAB 4: REPORTS */}
         {activeTab === 'reports' && (
-          <ParentReportsTab parentProfile={parentProfile} historyLogs={historyLogs} />
+          <div id="reports-wallet-tab">
+            <ParentReportsTab parentProfile={parentProfile} historyLogs={historyLogs} />
+          </div>
         )}
 
         {/* TAB 5: PARENT DETAILS & REGISTERED HOME PICKUP HUB */}
