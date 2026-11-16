@@ -4,16 +4,15 @@ This guide governs all automated development, refactoring, and collaboration on 
 
 ---
 
-## 1. Division of Responsibility
+## 1. Roles & Authority
 
-* **J.A.R.V.I.S. (The Commander & Desktop Monitor)**
-  * Voice interface for the user (`"Jarvis, check LunchMate status"`, `"Jarvis, start LunchMate dev server"`, `"Jarvis, verify the build"`).
-  * Real-time monitoring of live endpoints (`https://lunchmate-1hq9.onrender.com/api/health`, `https://lunch-mate-opal.vercel.app`).
-  * Displays status cards in the JARVIS Qt HUD panel and delegates complex code modifications.
-* **Google Antigravity & IDE Coding Assistants (The Implementation Engineers)**
-  * Full-stack architecture, complex multi-file features, and state machine refactoring.
-  * Schema migrations (`npx prisma db push`), production builds (`npm run build`), and git commits.
-  * Always updates `.jarvis_bridge.json` after completing major work so JARVIS stays synchronized.
+* **J.A.R.V.I.S. (Autonomous Desktop Agent & Commander)**
+  * Acts as the primary autonomous agent for the project.
+  * Receives spoken or typed instructions from the user, plans changes, modifies source files directly via `dev_agent`, runs `npm run build` verification, and speaks results back to the user.
+  * Directly manages dev server lifecycle, opens browser views, and monitors live health endpoints.
+* **Google Antigravity & IDE Coding Assistants (Collaborative Heavy Engineering)**
+  * Multi-file architecture, schema migrations, and deep refactoring in parallel sessions.
+  * Synchronizes task status and history via `.jarvis_bridge.json`.
 
 ---
 

@@ -6,7 +6,7 @@
   "health_endpoint": "https://lunchmate-1hq9.onrender.com/api/health",
   "database": "Neon Serverless PostgreSQL (AWS Singapore)",
   "active_coding_assistant": "Google Antigravity",
-  "last_synced": "2026-11-16T15:30:00+05:30",
+  "last_synced": "2026-11-16T18:18:39.888894+05:30",
   "system_state": {
     "git_branch": "main",
     "last_commit": "28056e9",
@@ -48,8 +48,7 @@
   ],
   "pending_tasks": [],
   "cooperation_rules": {
-    "orchestrator": "J.A.R.V.I.S. (Desktop Voice Command & Real-Time Monitor)",
-    "primary_engineer": "Google Antigravity (Deep Architecture, Multi-File Implementation, Build Verification & Git Push)",
-    "secondary_engineer": "JARVIS dev_agent (Localized desktop refactoring & quick fixes)"
+    "primary_autonomous_agent": "J.A.R.V.I.S. (Autonomous Desktop Voice & Coding Agent)",
+    "collaborating_engineer": "Google Antigravity (Deep Multi-File Architecture, Cloud Deployments, and Parallel IDE Engineering)"
   }
 }
